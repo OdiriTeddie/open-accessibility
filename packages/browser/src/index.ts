@@ -82,7 +82,7 @@ async function getAccessibilityTree(page: Page): Promise<AccessibilityTreeNode[]
 }
 
 async function getDomSnapshot(page: Page): Promise<DomElementSnapshot[]> {
-  return page.locator("body *").evaluateAll((elements) =>
+  const dom = await page.locator("body *").evaluateAll((elements) =>
     elements.slice(0, 1000).map((element) => {
       const htmlElement = element as HTMLElement;
       return {
@@ -99,6 +99,8 @@ async function getDomSnapshot(page: Page): Promise<DomElementSnapshot[]> {
       };
     }),
   );
+
+  return enrichDomSnapshotWithBackendNodeIds(page, dom);
 }
 
 async function runAxe(page: Page): Promise<AxeRunResult> {
@@ -108,6 +110,64 @@ async function runAxe(page: Page): Promise<AxeRunResult> {
 
 async function closeBrowser(browser: Browser): Promise<void> {
   await browser.close();
+}
+
+async function enrichDomSnapshotWithBackendNodeIds(
+  page: Page,
+  dom: DomElementSnapshot[],
+): Promise<DomElementSnapshot[]> {
+  const session = await page.context().newCDPSession(page);
+  try {
+    const documentResult = await session.send("DOM.getDocument", {
+      depth: 0,
+      pierce: true,
+    });
+    const rootNodeId = readNodeId(documentResult.root);
+    if (!rootNodeId) {
+      return dom;
+    }
+
+    return Promise.all(
+      dom.map(async (element) => {
+        try {
+          const queryResult = await session.send("DOM.querySelector", {
+            nodeId: rootNodeId,
+            selector: element.selector,
+          });
+          const nodeId = readNodeId(queryResult);
+          if (!nodeId) {
+            return element;
+          }
+
+          const describeResult = await session.send("DOM.describeNode", {
+            nodeId,
+          });
+          const backendNodeId = readBackendNodeId(describeResult.node);
+          return backendNodeId ? { ...element, backendNodeId } : element;
+        } catch {
+          return element;
+        }
+      }),
+    );
+  } finally {
+    await session.detach();
+  }
+}
+
+function readNodeId(value: unknown): number | undefined {
+  if (!value || typeof value !== "object" || !("nodeId" in value)) {
+    return undefined;
+  }
+  const nodeId = (value as { nodeId?: unknown }).nodeId;
+  return typeof nodeId === "number" && nodeId > 0 ? nodeId : undefined;
+}
+
+function readBackendNodeId(value: unknown): number | undefined {
+  if (!value || typeof value !== "object" || !("backendNodeId" in value)) {
+    return undefined;
+  }
+  const backendNodeId = (value as { backendNodeId?: unknown }).backendNodeId;
+  return typeof backendNodeId === "number" && backendNodeId > 0 ? backendNodeId : undefined;
 }
 
 function logDebug(options: BrowserInspectOptions, message: string): void {

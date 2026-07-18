@@ -27,6 +27,7 @@ export interface DomElementSnapshot {
   selector: string;
   tagName: string;
   outerHtml: string;
+  backendNodeId?: number;
   id?: string;
   role?: string;
   ariaLabel?: string;
@@ -75,6 +76,8 @@ export interface IssueLocation {
   target: string[];
   html: string;
   domElement?: DomElementSnapshot;
+  accessibilityNode?: AccessibilityTreeNode;
+  correlation: "backend-node-id" | "selector" | "html" | "none";
 }
 
 export interface AccessibilityIssue {

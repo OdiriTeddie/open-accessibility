@@ -25,6 +25,7 @@ export function renderCliReport(report: AnalysisReport): string {
     lines.push(`[${issue.impact.toUpperCase()}] ${issue.help}`);
     lines.push(`  Rule: ${issue.id}`);
     lines.push(`  DOM element: ${issue.location.selector || "unknown"}`);
+    lines.push(`  Correlation: ${issue.location.correlation}`);
     lines.push(`  Computed role: ${issue.computedRole || "not exposed in initial snapshot"}`);
     lines.push(`  Accessible name: ${issue.accessibleName || "not exposed in initial snapshot"}`);
     lines.push(`  Suggested remediation: ${issue.suggestedRemediation}`);

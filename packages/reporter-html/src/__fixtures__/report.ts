@@ -27,6 +27,7 @@ export function createFixtureReport(): AnalysisReport {
           selector: "#empty-button",
           target: ["#empty-button"],
           html: '<button id="empty-button"></button>',
+          correlation: "selector",
         },
         computedRole: "button",
         suggestedRemediation:

@@ -11,6 +11,7 @@ describe("renderCliReport", () => {
     expect(output).toContain("Critical issues: 1");
     expect(output).toContain("[CRITICAL] Buttons must have discernible text");
     expect(output).toContain("DOM element: #empty-button");
+    expect(output).toContain("Correlation: selector");
     expect(output).toContain("Computed role: button");
   });
 });

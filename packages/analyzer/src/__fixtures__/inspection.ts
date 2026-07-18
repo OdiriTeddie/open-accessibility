@@ -8,26 +8,29 @@ export function createFixtureInspection(): BrowserInspection {
     inspectedAt: "2026-01-01T00:00:00.000Z",
     accessibilityTree: [
       { nodeId: "1", role: { value: "RootWebArea" }, name: { value: "Accessibility Fixtures" } },
-      { nodeId: "2", role: { value: "button" }, name: { value: "" } },
-      { nodeId: "3", role: { value: "img" }, name: { value: "" } },
-      { nodeId: "4", role: { value: "textbox" }, name: { value: "" } },
+      { nodeId: "2", backendDOMNodeId: 101, role: { value: "button" }, name: { value: "" } },
+      { nodeId: "3", backendDOMNodeId: 102, role: { value: "image" }, name: { value: "" } },
+      { nodeId: "4", backendDOMNodeId: 103, role: { value: "textbox" }, name: { value: "Email" } },
     ],
     dom: [
       {
         selector: "#empty-button",
         tagName: "button",
+        backendNodeId: 101,
         outerHtml: '<button id="empty-button"></button>',
         id: "empty-button",
       },
       {
         selector: "#hero-image",
         tagName: "img",
+        backendNodeId: 102,
         outerHtml: '<img id="hero-image" src="/hero.png">',
         id: "hero-image",
       },
       {
         selector: "#email",
         tagName: "input",
+        backendNodeId: 103,
         outerHtml: '<input id="email" type="email">',
         id: "email",
       },

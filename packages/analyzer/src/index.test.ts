@@ -27,12 +27,15 @@ describe("analyzeInspection", () => {
     const labelIssue = report.issues.find((issue: AccessibilityIssue) => issue.id === "label");
 
     expect(buttonIssue?.location.domElement?.id).toBe("empty-button");
+    expect(buttonIssue?.location.accessibilityNode?.backendDOMNodeId).toBe(101);
+    expect(buttonIssue?.location.correlation).toBe("backend-node-id");
     expect(buttonIssue?.computedRole).toBe("button");
     expect(buttonIssue?.accessibleName).toBeUndefined();
     expect(buttonIssue?.suggestedRemediation).toContain("Buttons must have discernible text");
 
     expect(labelIssue?.location.domElement?.id).toBe("email");
     expect(labelIssue?.computedRole).toBe("textbox");
+    expect(labelIssue?.accessibleName).toBe("Email");
   });
 
   it("falls back to HTML matching when selector correlation misses", () => {
@@ -40,6 +43,7 @@ describe("analyzeInspection", () => {
 
     expect(report.issues[0]?.location.selector).toBe(".generated-selector");
     expect(report.issues[0]?.location.domElement?.id).toBe("empty-button");
+    expect(report.issues[0]?.location.correlation).toBe("backend-node-id");
     expect(report.issues[0]?.computedRole).toBe("button");
   });
 });

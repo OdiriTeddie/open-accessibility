@@ -1,5 +1,6 @@
 import type {
   AccessibilityIssue,
+  AccessibilityTreeNode,
   AnalysisReport,
   AxeViolation,
   BrowserInspection,
@@ -8,10 +9,12 @@ import type {
 } from "@open-accessibility/tree";
 
 export function analyzeInspection(inspection: BrowserInspection): AnalysisReport {
-  const issues = inspection.axe.violations.flatMap((violation) =>
+  const issues: AccessibilityIssue[] = inspection.axe.violations.flatMap((violation) =>
     violation.nodes.map((node) => {
       const target = node.target[0] ?? "";
-      const domElement = findDomElement(inspection.dom, target, node.html);
+      const match = findDomElement(inspection.dom, target, node.html);
+      const accessibilityNode = findAccessibilityNode(inspection.accessibilityTree, match.domElement);
+      const correlation = accessibilityNode ? "backend-node-id" : match.correlation;
       return {
         id: violation.id,
         impact: normalizeImpact(violation.impact),
@@ -22,10 +25,12 @@ export function analyzeInspection(inspection: BrowserInspection): AnalysisReport
           selector: target,
           target: node.target,
           html: node.html,
-          domElement,
+          domElement: match.domElement,
+          accessibilityNode,
+          correlation,
         },
-        computedRole: getComputedRole(domElement),
-        accessibleName: domElement?.accessibleNameHint,
+        computedRole: getComputedRole(accessibilityNode, match.domElement),
+        accessibleName: getAccessibleName(accessibilityNode, match.domElement),
         suggestedRemediation: buildRemediation(violation),
       };
     }),
@@ -66,20 +71,60 @@ function findDomElement(
   elements: DomElementSnapshot[],
   selector: string,
   html: string,
-): DomElementSnapshot | undefined {
-  return (
-    elements.find((element) => element.selector === selector) ??
+): { domElement?: DomElementSnapshot; correlation: "selector" | "html" | "none" } {
+  const selectorMatch = elements.find((element) => element.selector === selector);
+  if (selectorMatch) {
+    return { domElement: selectorMatch, correlation: "selector" };
+  }
+
+  const htmlMatch =
     elements.find((element) => element.outerHtml === html) ??
-    elements.find((element) => normalizeHtml(element.outerHtml).startsWith(normalizeHtml(html)))
-  );
+    elements.find((element) => normalizeHtml(element.outerHtml).startsWith(normalizeHtml(html)));
+
+  return htmlMatch
+    ? { domElement: htmlMatch, correlation: "html" }
+    : { domElement: undefined, correlation: "none" };
 }
 
-function getComputedRole(element: DomElementSnapshot | undefined): string | undefined {
+function findAccessibilityNode(
+  accessibilityTree: AccessibilityTreeNode[],
+  element: DomElementSnapshot | undefined,
+): AccessibilityTreeNode | undefined {
+  if (!element?.backendNodeId) {
+    return undefined;
+  }
+
+  return accessibilityTree.find((node) => node.backendDOMNodeId === element.backendNodeId);
+}
+
+function getComputedRole(
+  accessibilityNode: AccessibilityTreeNode | undefined,
+  element: DomElementSnapshot | undefined,
+): string | undefined {
+  const computedRole = readAccessibilityValue(accessibilityNode?.role);
+  if (computedRole) {
+    return computedRole;
+  }
+
   if (!element) {
     return undefined;
   }
 
   return element.role ?? implicitRoleByTagName[element.tagName];
+}
+
+function getAccessibleName(
+  accessibilityNode: AccessibilityTreeNode | undefined,
+  element: DomElementSnapshot | undefined,
+): string | undefined {
+  return readAccessibilityValue(accessibilityNode?.name) ?? element?.accessibleNameHint;
+}
+
+function readAccessibilityValue(value: AccessibilityTreeNode["role"]): string | undefined {
+  if (typeof value?.value === "string" && value.value.trim()) {
+    return value.value;
+  }
+  return undefined;
 }
 
 function normalizeHtml(html: string): string {

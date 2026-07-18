@@ -9,6 +9,7 @@ export function renderHtmlReport(report: AnalysisReport): string {
           <h2>${escapeHtml(issue.help)}</h2>
           <dl>
             <dt>DOM element</dt><dd><code>${escapeHtml(issue.location.selector || "unknown")}</code></dd>
+            <dt>Correlation</dt><dd>${escapeHtml(issue.location.correlation)}</dd>
             <dt>HTML</dt><dd><code>${escapeHtml(issue.location.html)}</code></dd>
             <dt>Computed role</dt><dd>${escapeHtml(issue.computedRole || "not exposed in initial snapshot")}</dd>
             <dt>Accessible name</dt><dd>${escapeHtml(issue.accessibleName || "not exposed in initial snapshot")}</dd>
