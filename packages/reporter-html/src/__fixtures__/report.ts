@@ -28,11 +28,46 @@ export function createFixtureReport(): AnalysisReport {
           target: ["#empty-button"],
           html: '<button id="empty-button"></button>',
           correlation: "selector",
+          source: {
+            file: "apps/playground/src/main.tsx",
+            line: 12,
+            column: 9,
+            componentName: "PlaygroundApp",
+            confidence: "high",
+            strategy: "source-attribute",
+          },
         },
         computedRole: "button",
         suggestedRemediation:
           "Buttons must have discernible text. See https://dequeuniversity.com/rules/axe/4.10/button-name",
       },
     ],
+    snapshot: {
+      accessibilityTree: [
+        { nodeId: "1", role: { value: "RootWebArea" }, name: { value: "Accessibility Fixtures" } },
+        {
+          nodeId: "2",
+          backendDOMNodeId: 101,
+          role: { value: "button" },
+          name: { value: "" },
+        },
+      ],
+      dom: [
+        {
+          selector: "#empty-button",
+          tagName: "button",
+          backendNodeId: 101,
+          outerHtml: '<button id="empty-button"></button>',
+          source: {
+            file: "apps/playground/src/main.tsx",
+            line: 12,
+            column: 9,
+            componentName: "PlaygroundApp",
+            confidence: "high",
+            strategy: "source-attribute",
+          },
+        },
+      ],
+    },
   };
 }

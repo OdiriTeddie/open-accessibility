@@ -121,6 +121,10 @@ export interface AnalysisReport {
     unknown: number;
   };
   issues: AccessibilityIssue[];
+  snapshot: {
+    accessibilityTree: AccessibilityTreeNode[];
+    dom: DomElementSnapshot[];
+  };
 }
 
 export function countAccessibilityNodes(nodes: readonly AccessibilityTreeNode[]): number {

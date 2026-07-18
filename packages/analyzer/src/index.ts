@@ -55,6 +55,10 @@ export function analyzeInspection(inspection: BrowserInspection): AnalysisReport
       unknown: countByImpact(issues, "unknown"),
     },
     issues,
+    snapshot: {
+      accessibilityTree: inspection.accessibilityTree,
+      dom: inspection.dom,
+    },
   };
 }
 

@@ -42,5 +42,19 @@ export function createFixtureReport(): AnalysisReport {
           "Buttons must have discernible text. See https://dequeuniversity.com/rules/axe/4.10/button-name",
       },
     ],
+    snapshot: {
+      accessibilityTree: [
+        { nodeId: "1", role: { value: "RootWebArea" }, name: { value: "Accessibility Fixtures" } },
+        { nodeId: "2", backendDOMNodeId: 101, role: { value: "button" }, name: { value: "" } },
+      ],
+      dom: [
+        {
+          selector: "#empty-button",
+          tagName: "button",
+          backendNodeId: 101,
+          outerHtml: '<button id="empty-button"></button>',
+        },
+      ],
+    },
   };
 }
