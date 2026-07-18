@@ -17,7 +17,13 @@ export function createFixtureInspection(): BrowserInspection {
         selector: "#empty-button",
         tagName: "button",
         backendNodeId: 101,
-        outerHtml: '<button id="empty-button"></button>',
+        outerHtml:
+          '<button id="empty-button" data-open-accessibility-source="apps/playground/src/main.tsx:9:10" data-open-accessibility-component="PlaygroundApp"></button>',
+        attributes: {
+          id: "empty-button",
+          "data-open-accessibility-source": "apps/playground/src/main.tsx:9:10",
+          "data-open-accessibility-component": "PlaygroundApp",
+        },
         id: "empty-button",
       },
       {
@@ -54,7 +60,8 @@ export function createFixtureInspection(): BrowserInspection {
           nodes: [
             {
               target: ["#empty-button"],
-              html: '<button id="empty-button"></button>',
+              html:
+                '<button id="empty-button" data-open-accessibility-source="apps/playground/src/main.tsx:9:10" data-open-accessibility-component="PlaygroundApp"></button>',
               failureSummary: "Fix any of the following: Element does not have inner text.",
             },
           ],
@@ -105,7 +112,8 @@ export function createHtmlFallbackInspection(): BrowserInspection {
           nodes: [
             {
               target: [".generated-selector"],
-              html: '<button id="empty-button"></button>',
+              html:
+                '<button id="empty-button" data-open-accessibility-source="apps/playground/src/main.tsx:9:10" data-open-accessibility-component="PlaygroundApp"></button>',
             },
           ],
         },

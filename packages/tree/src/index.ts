@@ -27,6 +27,7 @@ export interface DomElementSnapshot {
   selector: string;
   tagName: string;
   outerHtml: string;
+  attributes?: Record<string, string>;
   backendNodeId?: number;
   id?: string;
   role?: string;
@@ -35,6 +36,17 @@ export interface DomElementSnapshot {
   title?: string;
   text?: string;
   accessibleNameHint?: string;
+  source?: SourceLocation;
+}
+
+export interface SourceLocation {
+  file: string;
+  line?: number;
+  column?: number;
+  componentName?: string;
+  framework?: string;
+  confidence: "high" | "medium" | "low";
+  strategy: string;
 }
 
 export interface AxeRunResult {
@@ -78,6 +90,7 @@ export interface IssueLocation {
   domElement?: DomElementSnapshot;
   accessibilityNode?: AccessibilityTreeNode;
   correlation: "backend-node-id" | "selector" | "html" | "none";
+  source?: SourceLocation;
 }
 
 export interface AccessibilityIssue {

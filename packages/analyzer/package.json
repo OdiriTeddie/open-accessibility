@@ -21,6 +21,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@open-accessibility/source-map": "workspace:*",
     "@open-accessibility/tree": "workspace:*"
   }
 }

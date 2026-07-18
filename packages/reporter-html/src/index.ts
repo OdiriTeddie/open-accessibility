@@ -10,6 +10,7 @@ export function renderHtmlReport(report: AnalysisReport): string {
           <dl>
             <dt>DOM element</dt><dd><code>${escapeHtml(issue.location.selector || "unknown")}</code></dd>
             <dt>Correlation</dt><dd>${escapeHtml(issue.location.correlation)}</dd>
+            <dt>Source</dt><dd><code>${escapeHtml(formatSource(issue.location.source))}</code></dd>
             <dt>HTML</dt><dd><code>${escapeHtml(issue.location.html)}</code></dd>
             <dt>Computed role</dt><dd>${escapeHtml(issue.computedRole || "not exposed in initial snapshot")}</dd>
             <dt>Accessible name</dt><dd>${escapeHtml(issue.accessibleName || "not exposed in initial snapshot")}</dd>
@@ -59,6 +60,17 @@ export function renderHtmlReport(report: AnalysisReport): string {
   </main>
 </body>
 </html>`;
+}
+
+function formatSource(source: AnalysisReport["issues"][number]["location"]["source"]): string {
+  if (!source) {
+    return "not mapped";
+  }
+
+  const line = source.line ? `:${source.line}` : "";
+  const column = source.column ? `:${source.column}` : "";
+  const component = source.componentName ? ` (${source.componentName})` : "";
+  return `${source.file}${line}${column}${component}`;
 }
 
 function metric(label: string, value: number): string {

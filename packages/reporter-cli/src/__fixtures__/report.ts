@@ -28,6 +28,14 @@ export function createFixtureReport(): AnalysisReport {
           target: ["#empty-button"],
           html: '<button id="empty-button"></button>',
           correlation: "selector",
+          source: {
+            file: "apps/playground/src/main.tsx",
+            line: 9,
+            column: 10,
+            componentName: "PlaygroundApp",
+            confidence: "high",
+            strategy: "source-attribute",
+          },
         },
         computedRole: "button",
         suggestedRemediation:

@@ -9,5 +9,8 @@
     "lint": "eslint src",
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@open-accessibility/tree": "workspace:*"
   }
 }

@@ -29,6 +29,12 @@ describe("analyzeInspection", () => {
     expect(buttonIssue?.location.domElement?.id).toBe("empty-button");
     expect(buttonIssue?.location.accessibilityNode?.backendDOMNodeId).toBe(101);
     expect(buttonIssue?.location.correlation).toBe("backend-node-id");
+    expect(buttonIssue?.location.source).toMatchObject({
+      file: "apps/playground/src/main.tsx",
+      line: 9,
+      column: 10,
+      componentName: "PlaygroundApp",
+    });
     expect(buttonIssue?.computedRole).toBe("button");
     expect(buttonIssue?.accessibleName).toBeUndefined();
     expect(buttonIssue?.suggestedRemediation).toContain("Buttons must have discernible text");

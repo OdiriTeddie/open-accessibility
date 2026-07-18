@@ -141,6 +141,9 @@ importers:
 
   packages/analyzer:
     dependencies:
+      '@open-accessibility/source-map':
+        specifier: workspace:*
+        version: link:../source-map
       '@open-accessibility/tree':
         specifier: workspace:*
         version: link:../tree
@@ -223,7 +226,11 @@ importers:
 
   packages/rules: {}
 
-  packages/source-map: {}
+  packages/source-map:
+    dependencies:
+      '@open-accessibility/tree':
+        specifier: workspace:*
+        version: link:../tree
 
   packages/tree: {}
 

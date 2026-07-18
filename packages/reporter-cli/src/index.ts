@@ -26,6 +26,7 @@ export function renderCliReport(report: AnalysisReport): string {
     lines.push(`  Rule: ${issue.id}`);
     lines.push(`  DOM element: ${issue.location.selector || "unknown"}`);
     lines.push(`  Correlation: ${issue.location.correlation}`);
+    lines.push(`  Source: ${formatSource(issue.location.source)}`);
     lines.push(`  Computed role: ${issue.computedRole || "not exposed in initial snapshot"}`);
     lines.push(`  Accessible name: ${issue.accessibleName || "not exposed in initial snapshot"}`);
     lines.push(`  Suggested remediation: ${issue.suggestedRemediation}`);
@@ -33,4 +34,15 @@ export function renderCliReport(report: AnalysisReport): string {
   }
 
   return lines.join("\n");
+}
+
+function formatSource(source: AnalysisReport["issues"][number]["location"]["source"]): string {
+  if (!source) {
+    return "not mapped";
+  }
+
+  const line = source.line ? `:${source.line}` : "";
+  const column = source.column ? `:${source.column}` : "";
+  const component = source.componentName ? ` (${source.componentName})` : "";
+  return `${source.file}${line}${column}${component}`;
 }

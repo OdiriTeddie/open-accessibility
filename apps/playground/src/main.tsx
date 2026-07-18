@@ -8,7 +8,14 @@ function PlaygroundApp() {
       <section aria-labelledby="buttons-heading">
         <h2 id="buttons-heading">Buttons</h2>
         <button id="named-button" type="button" aria-label="Save changes"></button>
-        <button id="empty-button" className="problem-button" type="button"></button>
+        <button
+          id="empty-button"
+          className="problem-button"
+          type="button"
+          data-open-accessibility-source="apps/playground/src/main.tsx:12:9"
+          data-open-accessibility-component="PlaygroundApp"
+          data-open-accessibility-framework="react"
+        ></button>
       </section>
 
       <section aria-labelledby="images-heading">
@@ -20,6 +27,9 @@ function PlaygroundApp() {
         />
         <img
           id="missing-alt-image"
+          data-open-accessibility-source="apps/playground/src/main.tsx:29:9"
+          data-open-accessibility-component="PlaygroundApp"
+          data-open-accessibility-framework="react"
           src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
         />
       </section>
@@ -31,7 +41,14 @@ function PlaygroundApp() {
             Email
             <input id="email" type="email" placeholder="developer@example.com" />
           </label>
-          <input id="unlabelled-search" type="search" placeholder="Search catalog" />
+          <input
+            id="unlabelled-search"
+            type="search"
+            placeholder="Search catalog"
+            data-open-accessibility-source="apps/playground/src/main.tsx:42:11"
+            data-open-accessibility-component="PlaygroundApp"
+            data-open-accessibility-framework="react"
+          />
           <button type="submit">Inspect Example</button>
         </form>
       </section>

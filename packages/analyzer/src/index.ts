@@ -7,6 +7,7 @@ import type {
   DomElementSnapshot,
   NormalizedImpact,
 } from "@open-accessibility/tree";
+import { findSourceForElement } from "@open-accessibility/source-map";
 
 export function analyzeInspection(inspection: BrowserInspection): AnalysisReport {
   const issues: AccessibilityIssue[] = inspection.axe.violations.flatMap((violation) =>
@@ -15,6 +16,7 @@ export function analyzeInspection(inspection: BrowserInspection): AnalysisReport
       const match = findDomElement(inspection.dom, target, node.html);
       const accessibilityNode = findAccessibilityNode(inspection.accessibilityTree, match.domElement);
       const correlation = accessibilityNode ? "backend-node-id" : match.correlation;
+      const source = match.domElement ? findSourceForElement(match.domElement) : undefined;
       return {
         id: violation.id,
         impact: normalizeImpact(violation.impact),
@@ -28,6 +30,7 @@ export function analyzeInspection(inspection: BrowserInspection): AnalysisReport
           domElement: match.domElement,
           accessibilityNode,
           correlation,
+          source,
         },
         computedRole: getComputedRole(accessibilityNode, match.domElement),
         accessibleName: getAccessibleName(accessibilityNode, match.domElement),

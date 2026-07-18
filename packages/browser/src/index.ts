@@ -85,10 +85,14 @@ async function getDomSnapshot(page: Page): Promise<DomElementSnapshot[]> {
   const dom = await page.locator("body *").evaluateAll((elements) =>
     elements.slice(0, 1000).map((element) => {
       const htmlElement = element as HTMLElement;
+      const attributes = Object.fromEntries(
+        htmlElement.getAttributeNames().map((name) => [name, htmlElement.getAttribute(name) ?? ""]),
+      );
       return {
         selector: buildSelector(htmlElement),
         tagName: htmlElement.tagName.toLowerCase(),
         outerHtml: htmlElement.outerHTML.slice(0, 500),
+        attributes,
         id: htmlElement.id || undefined,
         role: htmlElement.getAttribute("role") || undefined,
         ariaLabel: htmlElement.getAttribute("aria-label") || undefined,
