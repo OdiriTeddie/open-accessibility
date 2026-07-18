@@ -1,5 +1,5 @@
 import axeSource from "axe-core";
-import { chromium, type Browser, type Page } from "playwright";
+import { chromium, type Browser, type BrowserContext, type Page } from "playwright";
 import type {
   AccessibilityTreeNode,
   AxeRunResult,
@@ -15,6 +15,10 @@ export interface BrowserInspectOptions {
     height: number;
   };
   waitUntil?: "load" | "domcontentloaded" | "networkidle" | "commit";
+  waitForSelector?: string;
+  userAgent?: string;
+  storageStatePath?: string;
+  debug?: boolean;
 }
 
 export async function inspectPage(
@@ -22,16 +26,29 @@ export async function inspectPage(
   options: BrowserInspectOptions = {},
 ): Promise<BrowserInspection> {
   const browser = await chromium.launch({ headless: options.headless ?? true });
+  let context: BrowserContext | undefined;
 
   try {
-    const page = await browser.newPage({
+    context = await browser.newContext({
       viewport: options.viewport,
+      userAgent: options.userAgent,
+      storageState: options.storageStatePath,
     });
+    const page = await context.newPage();
+    logDebug(options, `Navigating to ${url}`);
     await page.goto(url, {
       waitUntil: options.waitUntil ?? "networkidle",
       timeout: options.timeoutMs ?? 30_000,
     });
 
+    if (options.waitForSelector) {
+      logDebug(options, `Waiting for selector ${options.waitForSelector}`);
+      await page.waitForSelector(options.waitForSelector, {
+        timeout: options.timeoutMs ?? 30_000,
+      });
+    }
+
+    logDebug(options, "Collecting accessibility tree, DOM snapshot, and axe results");
     const [accessibilityTree, dom, axe, title] = await Promise.all([
       getAccessibilityTree(page),
       getDomSnapshot(page),
@@ -49,6 +66,7 @@ export async function inspectPage(
       axe,
     };
   } finally {
+    await context?.close();
     await closeBrowser(browser);
   }
 }
@@ -90,6 +108,12 @@ async function runAxe(page: Page): Promise<AxeRunResult> {
 
 async function closeBrowser(browser: Browser): Promise<void> {
   await browser.close();
+}
+
+function logDebug(options: BrowserInspectOptions, message: string): void {
+  if (options.debug) {
+    console.error(`[open-accessibility:debug] ${message}`);
+  }
 }
 
 function buildSelector(element: HTMLElement): string {
