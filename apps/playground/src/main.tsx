@@ -5,14 +5,44 @@ function PlaygroundApp() {
   return (
     <main>
       <h1>Accessibility Playground</h1>
-      <form aria-label="Example checkout">
-        <label>
-          Email
-          <input type="email" placeholder="developer@example.com" />
-        </label>
-        <button type="submit">Inspect Example</button>
-      </form>
-      <button className="problem-button"></button>
+      <section aria-labelledby="buttons-heading">
+        <h2 id="buttons-heading">Buttons</h2>
+        <button id="named-button" type="button" aria-label="Save changes"></button>
+        <button id="empty-button" className="problem-button" type="button"></button>
+      </section>
+
+      <section aria-labelledby="images-heading">
+        <h2 id="images-heading">Images</h2>
+        <img
+          id="decorative-image"
+          alt=""
+          src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+        />
+        <img
+          id="missing-alt-image"
+          src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+        />
+      </section>
+
+      <section aria-labelledby="forms-heading">
+        <h2 id="forms-heading">Forms</h2>
+        <form aria-label="Example checkout">
+          <label>
+            Email
+            <input id="email" type="email" placeholder="developer@example.com" />
+          </label>
+          <input id="unlabelled-search" type="search" placeholder="Search catalog" />
+          <button type="submit">Inspect Example</button>
+        </form>
+      </section>
+
+      <section aria-labelledby="landmarks-heading">
+        <h2 id="landmarks-heading">Landmarks</h2>
+        <nav aria-label="Primary">
+          <a href="#buttons-heading">Buttons</a>
+          <a href="#forms-heading">Forms</a>
+        </nav>
+      </section>
     </main>
   );
 }

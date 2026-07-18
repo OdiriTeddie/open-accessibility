@@ -11,6 +11,10 @@ main {
   padding: 40px 20px;
 }
 
+section {
+  margin: 28px 0;
+}
+
 form {
   display: grid;
   gap: 16px;
@@ -29,6 +33,18 @@ button {
 }
 
 .problem-button {
-  margin-top: 28px;
   width: 44px;
+}
+
+img {
+  display: inline-block;
+  width: 80px;
+  height: 48px;
+  margin-right: 12px;
+  background: #ddd;
+}
+
+nav {
+  display: flex;
+  gap: 12px;
 }
