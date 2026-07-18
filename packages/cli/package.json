@@ -1,0 +1,27 @@
+{
+  "name": "open-accessibility",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "open-accessibility": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/index.ts",
+    "lint": "eslint src",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@open-accessibility/core": "workspace:*",
+    "@open-accessibility/reporter-cli": "workspace:*",
+    "@open-accessibility/reporter-html": "workspace:*",
+    "@open-accessibility/reporter-json": "workspace:*",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2"
+  }
+}

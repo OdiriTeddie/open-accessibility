@@ -1,0 +1,17 @@
+body {
+  margin: 0;
+  color: #1c1c1c;
+  background: #f7f7f4;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+main {
+  max-width: 800px;
+  padding: 48px 24px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 44px;
+  margin: 0 0 16px;
+}
