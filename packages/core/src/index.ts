@@ -1,5 +1,6 @@
 import { analyzeInspection } from "@open-accessibility/analyzer";
 import { inspectPage, type BrowserInspectOptions } from "@open-accessibility/browser";
+export type { AnalysisReport, BrowserInspection } from "@open-accessibility/tree";
 
 export type InspectOptions = BrowserInspectOptions;
 

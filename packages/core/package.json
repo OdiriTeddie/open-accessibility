@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "@open-accessibility/analyzer": "workspace:*",
-    "@open-accessibility/browser": "workspace:*"
+    "@open-accessibility/browser": "workspace:*",
+    "@open-accessibility/tree": "workspace:*"
   },
   "devDependencies": {
     "tsx": "^4.19.2"

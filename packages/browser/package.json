@@ -11,6 +11,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@open-accessibility/tree": "workspace:*",
     "axe-core": "^4.10.2",
     "playwright": "^1.49.1"
   }

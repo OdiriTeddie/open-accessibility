@@ -11,6 +11,6 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@open-accessibility/analyzer": "workspace:*"
+    "@open-accessibility/tree": "workspace:*"
   }
 }

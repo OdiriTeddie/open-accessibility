@@ -1,43 +1,20 @@
 import axeSource from "axe-core";
 import { chromium, type Browser, type Page } from "playwright";
+import type {
+  AccessibilityTreeNode,
+  AxeRunResult,
+  BrowserInspection,
+  DomElementSnapshot,
+} from "@open-accessibility/tree";
 
 export interface BrowserInspectOptions {
   headless?: boolean;
   timeoutMs?: number;
-}
-
-export interface DomElementSnapshot {
-  selector: string;
-  tagName: string;
-  id?: string;
-  role?: string;
-  ariaLabel?: string;
-  text?: string;
-}
-
-export interface BrowserInspection {
-  url: string;
-  title: string;
-  accessibilityTree: unknown[];
-  dom: DomElementSnapshot[];
-  axe: AxeRunResult;
-}
-
-export interface AxeRunResult {
-  violations: AxeViolation[];
-}
-
-export interface AxeViolation {
-  id: string;
-  impact?: "minor" | "moderate" | "serious" | "critical" | null;
-  description: string;
-  help: string;
-  helpUrl: string;
-  nodes: Array<{
-    target: string[];
-    html: string;
-    failureSummary?: string;
-  }>;
+  viewport?: {
+    width: number;
+    height: number;
+  };
+  waitUntil?: "load" | "domcontentloaded" | "networkidle" | "commit";
 }
 
 export async function inspectPage(
@@ -47,19 +24,26 @@ export async function inspectPage(
   const browser = await chromium.launch({ headless: options.headless ?? true });
 
   try {
-    const page = await browser.newPage();
+    const page = await browser.newPage({
+      viewport: options.viewport,
+    });
     await page.goto(url, {
-      waitUntil: "networkidle",
+      waitUntil: options.waitUntil ?? "networkidle",
       timeout: options.timeoutMs ?? 30_000,
     });
 
-    const accessibilityTree = await getAccessibilityTree(page);
-    const dom = await getDomSnapshot(page);
-    const axe = await runAxe(page);
+    const [accessibilityTree, dom, axe, title] = await Promise.all([
+      getAccessibilityTree(page),
+      getDomSnapshot(page),
+      runAxe(page),
+      page.title(),
+    ]);
 
     return {
       url,
-      title: await page.title(),
+      finalUrl: page.url(),
+      title,
+      inspectedAt: new Date().toISOString(),
       accessibilityTree,
       dom,
       axe,
@@ -69,11 +53,14 @@ export async function inspectPage(
   }
 }
 
-async function getAccessibilityTree(page: Page): Promise<unknown[]> {
+async function getAccessibilityTree(page: Page): Promise<AccessibilityTreeNode[]> {
   const session = await page.context().newCDPSession(page);
-  const result = await session.send("Accessibility.getFullAXTree");
-  await session.detach();
-  return Array.isArray(result.nodes) ? result.nodes : [];
+  try {
+    const result = await session.send("Accessibility.getFullAXTree");
+    return Array.isArray(result.nodes) ? (result.nodes as AccessibilityTreeNode[]) : [];
+  } finally {
+    await session.detach();
+  }
 }
 
 async function getDomSnapshot(page: Page): Promise<DomElementSnapshot[]> {
@@ -83,10 +70,14 @@ async function getDomSnapshot(page: Page): Promise<DomElementSnapshot[]> {
       return {
         selector: buildSelector(htmlElement),
         tagName: htmlElement.tagName.toLowerCase(),
+        outerHtml: htmlElement.outerHTML.slice(0, 500),
         id: htmlElement.id || undefined,
         role: htmlElement.getAttribute("role") || undefined,
         ariaLabel: htmlElement.getAttribute("aria-label") || undefined,
+        ariaLabelledBy: htmlElement.getAttribute("aria-labelledby") || undefined,
+        title: htmlElement.getAttribute("title") || undefined,
         text: htmlElement.innerText?.trim().slice(0, 160) || undefined,
+        accessibleNameHint: getAccessibleNameHint(htmlElement),
       };
     }),
   );
@@ -128,6 +119,32 @@ function buildSelector(element: HTMLElement): string {
   }
 
   return parts.join(" > ");
+}
+
+function getAccessibleNameHint(element: HTMLElement): string | undefined {
+  const ariaLabel = element.getAttribute("aria-label")?.trim();
+  if (ariaLabel) {
+    return ariaLabel;
+  }
+
+  const labelledBy = element.getAttribute("aria-labelledby");
+  if (labelledBy) {
+    const label = labelledBy
+      .split(/\s+/)
+      .map((id) => document.getElementById(id)?.innerText.trim())
+      .filter(Boolean)
+      .join(" ");
+    if (label) {
+      return label;
+    }
+  }
+
+  const title = element.getAttribute("title")?.trim();
+  if (title) {
+    return title;
+  }
+
+  return element.innerText?.trim().slice(0, 160) || undefined;
 }
 
 declare global {

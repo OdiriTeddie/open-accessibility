@@ -1,4 +1,4 @@
-import type { AnalysisReport } from "@open-accessibility/analyzer";
+import type { AnalysisReport } from "@open-accessibility/tree";
 
 export function renderHtmlReport(report: AnalysisReport): string {
   const issues = report.issues
@@ -8,7 +8,8 @@ export function renderHtmlReport(report: AnalysisReport): string {
           <div class="issue__meta">${escapeHtml(issue.impact.toUpperCase())} / ${escapeHtml(issue.id)}</div>
           <h2>${escapeHtml(issue.help)}</h2>
           <dl>
-            <dt>DOM element</dt><dd><code>${escapeHtml(issue.target || "unknown")}</code></dd>
+            <dt>DOM element</dt><dd><code>${escapeHtml(issue.location.selector || "unknown")}</code></dd>
+            <dt>HTML</dt><dd><code>${escapeHtml(issue.location.html)}</code></dd>
             <dt>Computed role</dt><dd>${escapeHtml(issue.computedRole || "not exposed in initial snapshot")}</dd>
             <dt>Accessible name</dt><dd>${escapeHtml(issue.accessibleName || "not exposed in initial snapshot")}</dd>
             <dt>Suggested remediation</dt><dd>${escapeHtml(issue.suggestedRemediation)}</dd>
@@ -43,9 +44,11 @@ export function renderHtmlReport(report: AnalysisReport): string {
     <header>
       <h1>Open Accessibility Report</h1>
       <p>${escapeHtml(report.url)}</p>
+      <p>Inspected at ${escapeHtml(report.inspectedAt)}</p>
     </header>
     <section class="summary" aria-label="Summary">
       ${metric("Accessibility nodes", report.totals.accessibilityNodes)}
+      ${metric("DOM elements", report.totals.domElements)}
       ${metric("Critical", report.totals.critical)}
       ${metric("Serious", report.totals.serious)}
       ${metric("Moderate", report.totals.moderate)}

@@ -141,12 +141,15 @@ importers:
 
   packages/analyzer:
     dependencies:
-      '@open-accessibility/browser':
+      '@open-accessibility/tree':
         specifier: workspace:*
-        version: link:../browser
+        version: link:../tree
 
   packages/browser:
     dependencies:
+      '@open-accessibility/tree':
+        specifier: workspace:*
+        version: link:../tree
       axe-core:
         specifier: ^4.10.2
         version: 4.12.1
@@ -184,6 +187,9 @@ importers:
       '@open-accessibility/browser':
         specifier: workspace:*
         version: link:../browser
+      '@open-accessibility/tree':
+        specifier: workspace:*
+        version: link:../tree
     devDependencies:
       tsx:
         specifier: ^4.19.2
@@ -199,21 +205,21 @@ importers:
 
   packages/reporter-cli:
     dependencies:
-      '@open-accessibility/analyzer':
+      '@open-accessibility/tree':
         specifier: workspace:*
-        version: link:../analyzer
+        version: link:../tree
 
   packages/reporter-html:
     dependencies:
-      '@open-accessibility/analyzer':
+      '@open-accessibility/tree':
         specifier: workspace:*
-        version: link:../analyzer
+        version: link:../tree
 
   packages/reporter-json:
     dependencies:
-      '@open-accessibility/analyzer':
+      '@open-accessibility/tree':
         specifier: workspace:*
-        version: link:../analyzer
+        version: link:../tree
 
   packages/rules: {}
 
