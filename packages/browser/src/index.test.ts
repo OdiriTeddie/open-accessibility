@@ -1,7 +1,7 @@
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { inspectPage } from "./index.js";
+import { inspectPage, normalizePlaywrightBrowserInstallError } from "./index.js";
 
 describe("inspectPage", () => {
   let server: Server;
@@ -74,5 +74,23 @@ describe("inspectPage", () => {
     expect(button?.attributes?.["data-test-token"]).toBeUndefined();
     expect(button?.attributes?.["data-noisy"]).toBeUndefined();
     expect(buttonAxNode?.role?.value).toBe("button");
+  });
+});
+
+describe("normalizePlaywrightBrowserInstallError", () => {
+  it("adds a clear install hint for missing Chromium binaries", () => {
+    const error = normalizePlaywrightBrowserInstallError(
+      new Error("browserType.launch: Executable doesn't exist at C:\\Users\\example\\chromium.exe"),
+    );
+
+    expect(error.message).toContain("Playwright Chromium is not installed.");
+    expect(error.message).toContain("pnpm exec playwright install chromium");
+    expect(error.message).toContain("Original error:");
+  });
+
+  it("preserves unrelated browser launch errors", () => {
+    const original = new Error("Browser closed unexpectedly");
+
+    expect(normalizePlaywrightBrowserInstallError(original)).toBe(original);
   });
 });

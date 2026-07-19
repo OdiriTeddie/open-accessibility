@@ -25,7 +25,7 @@ export async function inspectPage(
   url: string,
   options: BrowserInspectOptions = {},
 ): Promise<BrowserInspection> {
-  const browser = await chromium.launch({ headless: options.headless ?? true });
+  const browser = await launchChromium(options);
   let context: BrowserContext | undefined;
 
   try {
@@ -265,6 +265,37 @@ async function enrichDomSnapshotWithBackendNodeIds(
   } finally {
     await session.detach();
   }
+}
+
+async function launchChromium(options: BrowserInspectOptions): Promise<Browser> {
+  try {
+    return await chromium.launch({ headless: options.headless ?? true });
+  } catch (error) {
+    throw normalizePlaywrightBrowserInstallError(error);
+  }
+}
+
+export function normalizePlaywrightBrowserInstallError(error: unknown): Error {
+  const message = error instanceof Error ? error.message : String(error);
+  if (!isPlaywrightBrowserInstallError(message)) {
+    return error instanceof Error ? error : new Error(message);
+  }
+
+  return new Error(
+    [
+      "Playwright Chromium is not installed.",
+      "Run `pnpm exec playwright install chromium` from the repository root, then retry the inspection.",
+      "Original error:",
+      message,
+    ].join("\n"),
+  );
+}
+
+function isPlaywrightBrowserInstallError(message: string): boolean {
+  return (
+    message.includes("Executable doesn't exist") ||
+    message.includes("playwright install")
+  );
 }
 
 async function getBackendNodeIdsFromSnapshot(session: CDPSession): Promise<Map<string, number>> {
