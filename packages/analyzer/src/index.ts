@@ -7,7 +7,7 @@ import type {
   DomElementSnapshot,
   NormalizedImpact,
 } from "@open-accessibility/tree";
-import { REPORT_SCHEMA_VERSION } from "@open-accessibility/tree";
+import { createReportMetadata } from "@open-accessibility/tree";
 import { findSourceForElement } from "@open-accessibility/source-map";
 
 const TOOL_VERSION = "0.1.0";
@@ -43,10 +43,7 @@ export function analyzeInspection(inspection: BrowserInspection): AnalysisReport
   );
 
   return {
-    metadata: {
-      schemaVersion: REPORT_SCHEMA_VERSION,
-      toolVersion: TOOL_VERSION,
-    },
+    metadata: createReportMetadata(TOOL_VERSION),
     url: inspection.url,
     finalUrl: inspection.finalUrl,
     title: inspection.title,

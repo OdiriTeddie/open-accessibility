@@ -1,7 +1,16 @@
 export type Impact = "minor" | "moderate" | "serious" | "critical";
 export type NormalizedImpact = Impact | "unknown";
 
+export const REPORT_SCHEMA_NAME = "open-accessibility-analysis-report";
 export const REPORT_SCHEMA_VERSION = "0.1.0";
+export const REPORT_TOOL_NAME = "open-accessibility";
+
+export interface ReportMetadata {
+  schemaName: typeof REPORT_SCHEMA_NAME;
+  schemaVersion: typeof REPORT_SCHEMA_VERSION;
+  toolName: typeof REPORT_TOOL_NAME;
+  toolVersion: string;
+}
 
 export interface AccessibilityProperty {
   name: string;
@@ -108,10 +117,7 @@ export interface AccessibilityIssue {
 }
 
 export interface AnalysisReport {
-  metadata: {
-    schemaVersion: string;
-    toolVersion: string;
-  };
+  metadata: ReportMetadata;
   url: string;
   finalUrl: string;
   title: string;
@@ -130,6 +136,15 @@ export interface AnalysisReport {
   snapshot: {
     accessibilityTree: AccessibilityTreeNode[];
     dom: DomElementSnapshot[];
+  };
+}
+
+export function createReportMetadata(toolVersion: string): ReportMetadata {
+  return {
+    schemaName: REPORT_SCHEMA_NAME,
+    schemaVersion: REPORT_SCHEMA_VERSION,
+    toolName: REPORT_TOOL_NAME,
+    toolVersion,
   };
 }
 

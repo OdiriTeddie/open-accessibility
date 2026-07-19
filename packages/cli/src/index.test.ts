@@ -351,7 +351,12 @@ function createReport(overrides: Partial<Record<"critical" | "serious" | "modera
   );
 
   return {
-    metadata: { schemaVersion: "0.1.0", toolVersion: "0.1.0" },
+    metadata: {
+      schemaName: "open-accessibility-analysis-report",
+      schemaVersion: "0.1.0",
+      toolName: "open-accessibility",
+      toolVersion: "0.1.0",
+    },
     url: "http://localhost:3000/",
     finalUrl: "http://localhost:3000/",
     title: "Fixture",

@@ -3,7 +3,9 @@ import type { AnalysisReport } from "@open-accessibility/tree";
 export function createFixtureReport(): AnalysisReport {
   return {
     metadata: {
+      schemaName: "open-accessibility-analysis-report",
       schemaVersion: "0.1.0",
+      toolName: "open-accessibility",
       toolVersion: "0.1.0",
     },
     url: "http://localhost:3000/fixtures",

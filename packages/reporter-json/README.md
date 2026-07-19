@@ -14,3 +14,5 @@ await writeFile("open-accessibility-report.json", renderJsonReport(report), "utf
 ```
 
 The emitted JSON preserves the full `AnalysisReport`, including metadata, totals, issues, DOM snapshots, and AX tree snapshots.
+
+Consumers should key compatibility checks from `metadata.schemaName` and `metadata.schemaVersion`.
