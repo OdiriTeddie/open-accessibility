@@ -81,7 +81,14 @@ export function createProgram(dependencies: CliDependencies = defaultDependencie
         dependencies.stdout.log(rendered);
       }
 
-      if (shouldFail(report, options.failOn)) {
+      const failureSummary = getFailOnSummary(report, options.failOn);
+      if (failureSummary.shouldFail) {
+        dependencies.stderr.error(
+          `Failing because --fail-on ${options.failOn} matched ${failureSummary.matchingIssues} ${pluralize(
+            "issue",
+            failureSummary.matchingIssues,
+          )} (${failureSummary.impactSummary}).`,
+        );
         process.exitCode = 2;
       }
     });
@@ -235,20 +242,51 @@ function parseFailOn(value: string): InspectCommandOptions["failOn"] {
   throw new Error(`Unsupported fail threshold "${value}". Use critical, serious, moderate, minor, or none.`);
 }
 
-function shouldFail(
+interface FailOnSummary {
+  shouldFail: boolean;
+  matchingIssues: number;
+  impactSummary: string;
+}
+
+function getFailOnSummary(
   report: Awaited<ReturnType<typeof inspect>>,
   failOn: InspectCommandOptions["failOn"],
-): boolean {
+): FailOnSummary {
+  const matchingIssues = countFailingIssues(report, failOn);
+  return {
+    shouldFail: matchingIssues > 0,
+    matchingIssues,
+    impactSummary: formatImpactSummary(report),
+  };
+}
+
+function countFailingIssues(
+  report: Awaited<ReturnType<typeof inspect>>,
+  failOn: InspectCommandOptions["failOn"],
+): number {
   switch (failOn) {
     case "none":
-      return false;
+      return 0;
     case "critical":
-      return report.totals.critical > 0;
+      return report.totals.critical;
     case "serious":
-      return report.totals.critical + report.totals.serious > 0;
+      return report.totals.critical + report.totals.serious;
     case "moderate":
-      return report.totals.critical + report.totals.serious + report.totals.moderate > 0;
+      return report.totals.critical + report.totals.serious + report.totals.moderate;
     case "minor":
-      return report.totals.issues > 0;
+      return report.totals.issues;
   }
+}
+
+function formatImpactSummary(report: Awaited<ReturnType<typeof inspect>>): string {
+  return [
+    `${report.totals.critical} critical`,
+    `${report.totals.serious} serious`,
+    `${report.totals.moderate} moderate`,
+    `${report.totals.minor} minor`,
+  ].join(", ");
+}
+
+function pluralize(word: string, count: number): string {
+  return count === 1 ? word : `${word}s`;
 }

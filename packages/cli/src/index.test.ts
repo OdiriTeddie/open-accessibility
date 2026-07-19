@@ -180,7 +180,9 @@ describe("open-accessibility inspect CLI", () => {
   });
 
   it("sets a failing exit code when impact meets the fail threshold", async () => {
-    const dependencies = createDependencies(createReport({ critical: 0, serious: 1 }));
+    const dependencies = createDependencies(
+      createReport({ critical: 1, serious: 1, moderate: 1, minor: 0 }),
+    );
 
     await runCli(dependencies, [
       "inspect",
@@ -192,6 +194,9 @@ describe("open-accessibility inspect CLI", () => {
     ]);
 
     expect(process.exitCode).toBe(2);
+    expect(dependencies.stderr.error).toHaveBeenCalledWith(
+      "Failing because --fail-on serious matched 2 issues (1 critical, 1 serious, 1 moderate, 0 minor).",
+    );
   });
 });
 
@@ -210,28 +215,32 @@ function createDependencies(report: AnalysisReport): CliDependencies {
   };
 }
 
-function createReport(overrides: { critical: number; serious: number }): AnalysisReport {
-  const issues =
-    overrides.critical + overrides.serious > 0
-      ? [
-          {
-            id: "button-name",
-            impact: overrides.critical > 0 ? ("critical" as const) : ("serious" as const),
-            description: "Ensures buttons have discernible text",
-            help: "Buttons must have discernible text",
-            helpUrl: "https://dequeuniversity.com/rules/axe/button-name",
-            location: {
-              selector: "#empty-button",
-              target: ["#empty-button"],
-              html: '<button id="empty-button"></button>',
-              correlation: "selector" as const,
-            },
-            computedRole: "button",
-            suggestedRemediation:
-              "Buttons must have discernible text. See https://dequeuniversity.com/rules/axe/button-name",
-          },
-        ]
-      : [];
+function createReport(overrides: Partial<Record<"critical" | "serious" | "moderate" | "minor", number>>): AnalysisReport {
+  const totals = {
+    critical: overrides.critical ?? 0,
+    serious: overrides.serious ?? 0,
+    moderate: overrides.moderate ?? 0,
+    minor: overrides.minor ?? 0,
+  };
+  const issues = (Object.entries(totals) as Array<[keyof typeof totals, number]>).flatMap(
+    ([impact, count]) =>
+      Array.from({ length: count }, (_, index) => ({
+        id: `button-name-${impact}-${index + 1}`,
+        impact,
+        description: "Ensures buttons have discernible text",
+        help: "Buttons must have discernible text",
+        helpUrl: "https://dequeuniversity.com/rules/axe/button-name",
+        location: {
+          selector: "#empty-button",
+          target: ["#empty-button"],
+          html: '<button id="empty-button"></button>',
+          correlation: "selector" as const,
+        },
+        computedRole: "button",
+        suggestedRemediation:
+          "Buttons must have discernible text. See https://dequeuniversity.com/rules/axe/button-name",
+      })),
+  );
 
   return {
     metadata: { schemaVersion: "0.1.0", toolVersion: "0.1.0" },
@@ -243,10 +252,10 @@ function createReport(overrides: { critical: number; serious: number }): Analysi
       accessibilityNodes: 2,
       domElements: 1,
       issues: issues.length,
-      critical: overrides.critical,
-      serious: overrides.serious,
-      moderate: 0,
-      minor: 0,
+      critical: totals.critical,
+      serious: totals.serious,
+      moderate: totals.moderate,
+      minor: totals.minor,
       unknown: 0,
     },
     issues,
