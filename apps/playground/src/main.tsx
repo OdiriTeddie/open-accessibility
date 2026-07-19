@@ -1,5 +1,11 @@
+import { createComponentSourceProps } from "@open-accessibility/react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
+
+const source = createComponentSourceProps({
+  file: "apps/playground/src/main.tsx",
+  componentName: "PlaygroundApp",
+});
 
 function PlaygroundApp() {
   return (
@@ -12,9 +18,7 @@ function PlaygroundApp() {
           id="empty-button"
           className="problem-button"
           type="button"
-          data-open-accessibility-source="apps/playground/src/main.tsx:12:9"
-          data-open-accessibility-component="PlaygroundApp"
-          data-open-accessibility-framework="react"
+          {...source(17, 9)}
         ></button>
       </section>
 
@@ -27,9 +31,7 @@ function PlaygroundApp() {
         />
         <img
           id="missing-alt-image"
-          data-open-accessibility-source="apps/playground/src/main.tsx:29:9"
-          data-open-accessibility-component="PlaygroundApp"
-          data-open-accessibility-framework="react"
+          {...source(32, 9)}
           src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
         />
       </section>
@@ -45,9 +47,7 @@ function PlaygroundApp() {
             id="unlabelled-search"
             type="search"
             placeholder="Search catalog"
-            data-open-accessibility-source="apps/playground/src/main.tsx:42:11"
-            data-open-accessibility-component="PlaygroundApp"
-            data-open-accessibility-framework="react"
+            {...source(46, 11)}
           />
           <button type="submit">Inspect Example</button>
         </form>
