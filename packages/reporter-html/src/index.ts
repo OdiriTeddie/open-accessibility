@@ -66,6 +66,7 @@ export function renderHtmlReport(report: AnalysisReport): string {
       ${report.finalUrl !== report.url ? `<p>Final URL: ${escapeHtml(report.finalUrl)}</p>` : ""}
       ${report.title ? `<p>Title: ${escapeHtml(report.title)}</p>` : ""}
       <p>Inspected at ${escapeHtml(report.inspectedAt)}</p>
+      <p>Schema ${escapeHtml(report.metadata.schemaVersion)} / Tool ${escapeHtml(report.metadata.toolVersion)}</p>
     </header>
 
     <section class="summary" aria-label="Summary">

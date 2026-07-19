@@ -1,6 +1,8 @@
 export type Impact = "minor" | "moderate" | "serious" | "critical";
 export type NormalizedImpact = Impact | "unknown";
 
+export const REPORT_SCHEMA_VERSION = "0.1.0";
+
 export interface AccessibilityProperty {
   name: string;
   value?: AccessibilityValue;
@@ -106,6 +108,10 @@ export interface AccessibilityIssue {
 }
 
 export interface AnalysisReport {
+  metadata: {
+    schemaVersion: string;
+    toolVersion: string;
+  };
   url: string;
   finalUrl: string;
   title: string;

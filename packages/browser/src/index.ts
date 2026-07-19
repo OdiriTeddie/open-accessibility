@@ -1,5 +1,5 @@
 import axeSource from "axe-core";
-import { chromium, type Browser, type BrowserContext, type Page } from "playwright";
+import { chromium, type Browser, type BrowserContext, type CDPSession, type Page } from "playwright";
 import type {
   AccessibilityTreeNode,
   AxeRunResult,
@@ -177,6 +177,7 @@ async function enrichDomSnapshotWithBackendNodeIds(
 ): Promise<DomElementSnapshot[]> {
   const session = await page.context().newCDPSession(page);
   try {
+    await session.send("DOM.enable");
     const documentResult = await session.send("DOM.getDocument", {
       depth: 0,
       pierce: true,
@@ -185,6 +186,8 @@ async function enrichDomSnapshotWithBackendNodeIds(
     if (!rootNodeId) {
       return dom;
     }
+
+    const snapshotBackendNodeIds = await getBackendNodeIdsFromSnapshot(session);
 
     return Promise.all(
       dom.map(async (element) => {
@@ -202,15 +205,85 @@ async function enrichDomSnapshotWithBackendNodeIds(
             nodeId,
           });
           const backendNodeId = readBackendNodeId(describeResult.node);
-          return backendNodeId ? { ...element, backendNodeId } : element;
+          return backendNodeId
+            ? { ...element, backendNodeId }
+            : { ...element, backendNodeId: snapshotBackendNodeIds.get(element.selector) };
         } catch {
-          return element;
+          return { ...element, backendNodeId: snapshotBackendNodeIds.get(element.selector) };
         }
       }),
     );
   } finally {
     await session.detach();
   }
+}
+
+async function getBackendNodeIdsFromSnapshot(session: CDPSession): Promise<Map<string, number>> {
+  const selectors = new Map<string, number>();
+  const result = await session.send("DOMSnapshot.captureSnapshot", {
+    computedStyles: [],
+  });
+
+  if (!isObject(result) || !Array.isArray(result.documents) || !Array.isArray(result.strings)) {
+    return selectors;
+  }
+
+  const strings = result.strings;
+  const document = result.documents[0];
+  if (!isObject(document) || !isObject(document.nodes)) {
+    return selectors;
+  }
+
+  const backendNodeIds = Array.isArray(document.nodes.backendNodeId)
+    ? document.nodes.backendNodeId
+    : [];
+  const nodeNames = Array.isArray(document.nodes.nodeName) ? document.nodes.nodeName : [];
+  const attributes = Array.isArray(document.nodes.attributes) ? document.nodes.attributes : [];
+
+  attributes.forEach((attributeIndexes, index) => {
+    if (!Array.isArray(attributeIndexes)) {
+      return;
+    }
+
+    const id = readSnapshotAttribute(attributeIndexes, strings, "id");
+    const backendNodeId = backendNodeIds[index];
+    if (id && typeof backendNodeId === "number") {
+      selectors.set(`#${escapeCssIdentifier(id)}`, backendNodeId);
+    }
+
+    const nodeNameIndex = nodeNames[index];
+    const nodeName = typeof nodeNameIndex === "number" ? strings[nodeNameIndex]?.toLowerCase() : undefined;
+    if (nodeName && typeof backendNodeId === "number" && !selectors.has(nodeName)) {
+      selectors.set(nodeName, backendNodeId);
+    }
+  });
+
+  return selectors;
+}
+
+function readSnapshotAttribute(
+  attributeIndexes: unknown[],
+  strings: unknown[],
+  attributeName: string,
+): string | undefined {
+  for (let index = 0; index < attributeIndexes.length; index += 2) {
+    const nameIndex = attributeIndexes[index];
+    const valueIndex = attributeIndexes[index + 1];
+    const name = typeof nameIndex === "number" ? strings[nameIndex] : undefined;
+    const value = typeof valueIndex === "number" ? strings[valueIndex] : undefined;
+    if (name === attributeName && typeof value === "string") {
+      return value;
+    }
+  }
+  return undefined;
+}
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function escapeCssIdentifier(value: string): string {
+  return value.replaceAll("\\", "\\\\").replaceAll("\"", "\\\"").replaceAll("#", "\\#");
 }
 
 function readNodeId(value: unknown): number | undefined {

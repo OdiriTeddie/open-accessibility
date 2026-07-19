@@ -19,6 +19,7 @@
     "@open-accessibility/reporter-cli": "workspace:*",
     "@open-accessibility/reporter-html": "workspace:*",
     "@open-accessibility/reporter-json": "workspace:*",
+    "@open-accessibility/tree": "workspace:*",
     "commander": "^12.1.0"
   },
   "devDependencies": {

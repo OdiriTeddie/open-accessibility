@@ -1,75 +1,107 @@
 #!/usr/bin/env node
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { Command } from "commander";
 import { inspect } from "@open-accessibility/core";
+import type { AnalysisReport } from "@open-accessibility/tree";
 import { renderCliReport } from "@open-accessibility/reporter-cli";
 import { renderHtmlReport } from "@open-accessibility/reporter-html";
 import { renderJsonReport } from "@open-accessibility/reporter-json";
 
-const program = new Command();
+export interface CliDependencies {
+  inspect: typeof inspect;
+  stdout: Pick<typeof console, "log">;
+  stderr: Pick<typeof console, "error">;
+  writeFile: typeof writeFile;
+  mkdir: typeof mkdir;
+}
 
-program
-  .name("open-accessibility")
-  .description("Inspect browser-computed accessibility for a web page.")
-  .version("0.1.0");
+export function createProgram(dependencies: CliDependencies = defaultDependencies()): Command {
+  const program = new Command();
 
-program
-  .command("inspect")
-  .argument("<url>", "URL to inspect, for example http://localhost:3000")
-  .option("-f, --format <format>", "report format: cli, json, or html", "cli")
-  .option("-o, --output <path>", "write report to a file")
-  .option("--headed", "show the Chromium browser window")
-  .option("--timeout <ms>", "navigation and selector timeout in milliseconds", parsePositiveInteger)
-  .option("--viewport <size>", "viewport size as WIDTHxHEIGHT, for example 1280x720", parseViewport)
-  .option(
-    "--wait-until <state>",
-    "navigation readiness: load, domcontentloaded, networkidle, or commit",
-    parseWaitUntil,
-  )
-  .option("--wait-for-selector <selector>", "wait for a selector before collecting accessibility data")
-  .option("--user-agent <value>", "override the browser user agent")
-  .option("--auth-storage-state <path>", "Playwright storage state JSON for authenticated pages")
-  .option(
-    "--fail-on <impact>",
-    "set non-zero exit when issues meet impact: critical, serious, moderate, minor, or none",
-    parseFailOn,
-    "critical",
-  )
-  .option("--debug", "print browser collection progress to stderr")
-  .action(async (url: string, options: InspectCommandOptions) => {
-    const normalizedUrl = parseUrl(url);
-    const report = await inspect(normalizedUrl, {
-      headless: !options.headed,
-      timeoutMs: options.timeout,
-      viewport: options.viewport,
-      waitUntil: options.waitUntil,
-      waitForSelector: options.waitForSelector,
-      userAgent: options.userAgent,
-      storageStatePath: options.authStorageState,
-      debug: options.debug,
+  program
+    .name("open-accessibility")
+    .description("Inspect browser-computed accessibility for a web page.")
+    .version("0.1.0");
+
+  program
+    .command("inspect")
+    .argument("<url>", "URL to inspect, for example http://localhost:3000")
+    .option("-f, --format <format>", "report format: cli, json, or html", "cli")
+    .option("-o, --output <path>", "write report to a file")
+    .option("--headed", "show the Chromium browser window")
+    .option("--timeout <ms>", "navigation and selector timeout in milliseconds", parsePositiveInteger)
+    .option("--viewport <size>", "viewport size as WIDTHxHEIGHT, for example 1280x720", parseViewport)
+    .option(
+      "--wait-until <state>",
+      "navigation readiness: load, domcontentloaded, networkidle, or commit",
+      parseWaitUntil,
+    )
+    .option("--wait-for-selector <selector>", "wait for a selector before collecting accessibility data")
+    .option("--user-agent <value>", "override the browser user agent")
+    .option("--auth-storage-state <path>", "Playwright storage state JSON for authenticated pages")
+    .option(
+      "--fail-on <impact>",
+      "set non-zero exit when issues meet impact: critical, serious, moderate, minor, or none",
+      parseFailOn,
+      "critical",
+    )
+    .option("--debug", "print browser collection progress to stderr")
+    .action(async (url: string, options: InspectCommandOptions) => {
+      const normalizedUrl = parseUrl(url);
+      const report = await dependencies.inspect(normalizedUrl, {
+        headless: !options.headed,
+        timeoutMs: options.timeout,
+        viewport: options.viewport,
+        waitUntil: options.waitUntil,
+        waitForSelector: options.waitForSelector,
+        userAgent: options.userAgent,
+        storageStatePath: options.authStorageState,
+        debug: options.debug,
+      });
+      const rendered = renderReport(options.format, report);
+
+      if (options.output) {
+        await dependencies.mkdir(dirname(options.output), { recursive: true });
+        await dependencies.writeFile(options.output, rendered, "utf8");
+        dependencies.stdout.log(`Wrote ${options.format} report to ${options.output}`);
+      } else {
+        dependencies.stdout.log(rendered);
+      }
+
+      if (shouldFail(report, options.failOn)) {
+        process.exitCode = 2;
+      }
     });
-    const rendered = renderReport(options.format, report);
 
-    if (options.output) {
-      await mkdir(dirname(options.output), { recursive: true });
-      await writeFile(options.output, rendered, "utf8");
-      console.log(`Wrote ${options.format} report to ${options.output}`);
-    } else {
-      console.log(rendered);
-    }
+  return program;
+}
 
-    if (shouldFail(report, options.failOn)) {
-      process.exitCode = 2;
-    }
-  });
+export async function main(argv = process.argv, dependencies = defaultDependencies()): Promise<void> {
+  try {
+    await createProgram(dependencies).parseAsync(argv);
+  } catch (error: unknown) {
+    dependencies.stderr.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  }
+}
 
-program.parseAsync().catch((error: unknown) => {
-  console.error(error instanceof Error ? error.message : String(error));
-  process.exitCode = 1;
-});
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  void main();
+}
 
-function renderReport(format: string, report: Awaited<ReturnType<typeof inspect>>): string {
+function defaultDependencies(): CliDependencies {
+  return {
+    inspect,
+    stdout: console,
+    stderr: console,
+    writeFile,
+    mkdir,
+  };
+}
+
+function renderReport(format: string, report: AnalysisReport): string {
   switch (format) {
     case "cli":
       return renderCliReport(report);
