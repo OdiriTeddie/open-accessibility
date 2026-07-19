@@ -85,6 +85,29 @@ describe("open-accessibility inspect CLI", () => {
     );
   });
 
+  it("writes HTML to the default output file when --output is omitted", async () => {
+    const dependencies = createDependencies(createReport({ critical: 0, serious: 0 }));
+
+    await runCli(dependencies, [
+      "inspect",
+      "http://localhost:3000/",
+      "--format",
+      "html",
+      "--fail-on",
+      "none",
+    ]);
+
+    expect(dependencies.mkdir).toHaveBeenCalledWith(".", { recursive: true });
+    expect(dependencies.writeFile).toHaveBeenCalledWith(
+      "open-accessibility-report.html",
+      expect.stringContaining("<!doctype html>"),
+      "utf8",
+    );
+    expect(dependencies.stdout.log).toHaveBeenCalledWith(
+      "Wrote html report to open-accessibility-report.html",
+    );
+  });
+
   it("opens generated HTML reports when --open is passed", async () => {
     const dependencies = createDependencies(createReport({ critical: 0, serious: 0 }));
 
@@ -109,6 +132,27 @@ describe("open-accessibility inspect CLI", () => {
     expect(dependencies.stdout.log).toHaveBeenCalledWith("Opened HTML report in your default browser.");
   });
 
+  it("opens the default HTML report when --open is passed without --output", async () => {
+    const dependencies = createDependencies(createReport({ critical: 0, serious: 0 }));
+
+    await runCli(dependencies, [
+      "inspect",
+      "http://localhost:3000/",
+      "--format",
+      "html",
+      "--open",
+      "--fail-on",
+      "none",
+    ]);
+
+    expect(dependencies.writeFile).toHaveBeenCalledWith(
+      "open-accessibility-report.html",
+      expect.stringContaining("<!doctype html>"),
+      "utf8",
+    );
+    expect(dependencies.openFile).toHaveBeenCalledWith("open-accessibility-report.html");
+  });
+
   it("rejects invalid URLs and unsupported parser values", async () => {
     const dependencies = createDependencies(createReport({ critical: 0, serious: 0 }));
 
@@ -126,15 +170,12 @@ describe("open-accessibility inspect CLI", () => {
     ).rejects.toThrow('Unsupported fail threshold "bad"');
   });
 
-  it("rejects --open without HTML file output", async () => {
+  it("rejects --open for non-HTML reports", async () => {
     const dependencies = createDependencies(createReport({ critical: 0, serious: 0 }));
 
     await expect(
       runCli(dependencies, ["inspect", "http://localhost:3000/", "--format", "json", "--open"]),
     ).rejects.toThrow("--open can only be used with --format html.");
-    await expect(
-      runCli(dependencies, ["inspect", "http://localhost:3000/", "--format", "html", "--open"]),
-    ).rejects.toThrow("--open requires --output");
     expect(dependencies.inspect).not.toHaveBeenCalled();
   });
 

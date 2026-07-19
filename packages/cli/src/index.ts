@@ -10,6 +10,8 @@ import { renderCliReport } from "@open-accessibility/reporter-cli";
 import { renderHtmlReport } from "@open-accessibility/reporter-html";
 import { renderJsonReport } from "@open-accessibility/reporter-json";
 
+const DEFAULT_HTML_OUTPUT = "open-accessibility-report.html";
+
 export interface CliDependencies {
   inspect: typeof inspect;
   stdout: Pick<typeof console, "log">;
@@ -54,6 +56,7 @@ export function createProgram(dependencies: CliDependencies = defaultDependencie
     .action(async (url: string, options: InspectCommandOptions) => {
       const normalizedUrl = parseUrl(url);
       validateOpenOptions(options);
+      const outputPath = resolveOutputPath(options);
       const report = await dependencies.inspect(normalizedUrl, {
         headless: !options.headed,
         timeoutMs: options.timeout,
@@ -66,12 +69,12 @@ export function createProgram(dependencies: CliDependencies = defaultDependencie
       });
       const rendered = renderReport(options.format, report);
 
-      if (options.output) {
-        await dependencies.mkdir(dirname(options.output), { recursive: true });
-        await dependencies.writeFile(options.output, rendered, "utf8");
-        dependencies.stdout.log(`Wrote ${options.format} report to ${options.output}`);
+      if (outputPath) {
+        await dependencies.mkdir(dirname(outputPath), { recursive: true });
+        await dependencies.writeFile(outputPath, rendered, "utf8");
+        dependencies.stdout.log(`Wrote ${options.format} report to ${outputPath}`);
         if (options.open) {
-          await dependencies.openFile(options.output);
+          await dependencies.openFile(outputPath);
           dependencies.stdout.log(`Opened HTML report in your default browser.`);
         }
       } else {
@@ -163,9 +166,16 @@ function validateOpenOptions(options: InspectCommandOptions): void {
   if (options.format !== "html") {
     throw new Error("--open can only be used with --format html.");
   }
-  if (!options.output) {
-    throw new Error("--open requires --output so there is an HTML report file to open.");
+}
+
+function resolveOutputPath(options: InspectCommandOptions): string | undefined {
+  if (options.output) {
+    return options.output;
   }
+  if (options.format === "html") {
+    return DEFAULT_HTML_OUTPUT;
+  }
+  return undefined;
 }
 
 function parseUrl(value: string): string {

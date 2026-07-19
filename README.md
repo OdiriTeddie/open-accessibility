@@ -20,7 +20,11 @@ This repository is scaffolded for the `0.1` MVP:
 ```bash
 pnpm install
 pnpm --filter @open-accessibility/cli dev inspect http://localhost:3000
+pnpm --filter @open-accessibility/cli dev inspect http://localhost:3000 --format html
+pnpm --filter @open-accessibility/cli dev inspect http://localhost:3000 --format html --open
 ```
+
+HTML reports default to `open-accessibility-report.html` when `--output` is omitted.
 
 ## Source Marker Attributes
 
