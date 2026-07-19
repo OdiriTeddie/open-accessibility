@@ -15,6 +15,8 @@ This repository is scaffolded for the `0.1` MVP:
 - axe-core integration
 - CLI, JSON, and HTML reporter packages
 
+See [docs/roadmap.md](docs/roadmap.md) for the completed phase changelog and upcoming roadmap.
+
 ## Quick Start
 
 ```bash
