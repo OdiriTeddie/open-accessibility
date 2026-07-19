@@ -19,7 +19,38 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install chromium --with-deps
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm build
+      - name: Generate Open Accessibility report artifacts
+        shell: bash
+        run: |
+          mkdir -p artifacts/open-accessibility
+          pnpm --filter @open-accessibility/playground dev > /tmp/open-accessibility-playground.log 2>&1 &
+          PLAYGROUND_PID=$!
+          trap "kill $PLAYGROUND_PID" EXIT
+
+          for attempt in {1..30}; do
+            if curl -fsS http://127.0.0.1:5173 >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+
+          curl -fsS http://127.0.0.1:5173 >/dev/null
+          pnpm inspect http://127.0.0.1:5173 \
+            --format json \
+            --output artifacts/open-accessibility/open-accessibility-report.json \
+            --fail-on none
+          pnpm inspect http://127.0.0.1:5173 \
+            --format html \
+            --output artifacts/open-accessibility/open-accessibility-report.html \
+            --fail-on none
+      - name: Upload Open Accessibility reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: open-accessibility-reports
+          path: artifacts/open-accessibility/
+          if-no-files-found: error
