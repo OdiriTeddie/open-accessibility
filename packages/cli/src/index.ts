@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
+import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { Command } from "commander";
 import { inspect } from "@open-accessibility/core";
@@ -15,6 +16,7 @@ export interface CliDependencies {
   stderr: Pick<typeof console, "error">;
   writeFile: typeof writeFile;
   mkdir: typeof mkdir;
+  openFile: (path: string) => Promise<void>;
 }
 
 export function createProgram(dependencies: CliDependencies = defaultDependencies()): Command {
@@ -30,6 +32,7 @@ export function createProgram(dependencies: CliDependencies = defaultDependencie
     .argument("<url>", "URL to inspect, for example http://localhost:3000")
     .option("-f, --format <format>", "report format: cli, json, or html", "cli")
     .option("-o, --output <path>", "write report to a file")
+    .option("--open", "open the generated HTML report in the default browser")
     .option("--headed", "show the Chromium browser window")
     .option("--timeout <ms>", "navigation and selector timeout in milliseconds", parsePositiveInteger)
     .option("--viewport <size>", "viewport size as WIDTHxHEIGHT, for example 1280x720", parseViewport)
@@ -50,6 +53,7 @@ export function createProgram(dependencies: CliDependencies = defaultDependencie
     .option("--debug", "print browser collection progress to stderr")
     .action(async (url: string, options: InspectCommandOptions) => {
       const normalizedUrl = parseUrl(url);
+      validateOpenOptions(options);
       const report = await dependencies.inspect(normalizedUrl, {
         headless: !options.headed,
         timeoutMs: options.timeout,
@@ -66,6 +70,10 @@ export function createProgram(dependencies: CliDependencies = defaultDependencie
         await dependencies.mkdir(dirname(options.output), { recursive: true });
         await dependencies.writeFile(options.output, rendered, "utf8");
         dependencies.stdout.log(`Wrote ${options.format} report to ${options.output}`);
+        if (options.open) {
+          await dependencies.openFile(options.output);
+          dependencies.stdout.log(`Opened HTML report in your default browser.`);
+        }
       } else {
         dependencies.stdout.log(rendered);
       }
@@ -98,7 +106,26 @@ function defaultDependencies(): CliDependencies {
     stderr: console,
     writeFile,
     mkdir,
+    openFile,
   };
+}
+
+async function openFile(path: string): Promise<void> {
+  const command =
+    process.platform === "win32" ? "cmd" : process.platform === "darwin" ? "open" : "xdg-open";
+  const args =
+    process.platform === "win32" ? ["/c", "start", '""', path] : [path];
+
+  await new Promise<void>((resolve, reject) => {
+    const child = spawn(command, args, {
+      detached: true,
+      stdio: "ignore",
+      windowsHide: true,
+    });
+    child.once("error", reject);
+    child.unref();
+    resolve();
+  });
 }
 
 function renderReport(format: string, report: AnalysisReport): string {
@@ -117,6 +144,7 @@ function renderReport(format: string, report: AnalysisReport): string {
 interface InspectCommandOptions {
   format: string;
   output?: string;
+  open?: boolean;
   headed?: boolean;
   timeout?: number;
   viewport?: { width: number; height: number };
@@ -126,6 +154,18 @@ interface InspectCommandOptions {
   authStorageState?: string;
   failOn: "critical" | "serious" | "moderate" | "minor" | "none";
   debug?: boolean;
+}
+
+function validateOpenOptions(options: InspectCommandOptions): void {
+  if (!options.open) {
+    return;
+  }
+  if (options.format !== "html") {
+    throw new Error("--open can only be used with --format html.");
+  }
+  if (!options.output) {
+    throw new Error("--open requires --output so there is an HTML report file to open.");
+  }
 }
 
 function parseUrl(value: string): string {

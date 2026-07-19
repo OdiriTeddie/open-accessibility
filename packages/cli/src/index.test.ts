@@ -85,6 +85,30 @@ describe("open-accessibility inspect CLI", () => {
     );
   });
 
+  it("opens generated HTML reports when --open is passed", async () => {
+    const dependencies = createDependencies(createReport({ critical: 0, serious: 0 }));
+
+    await runCli(dependencies, [
+      "inspect",
+      "http://localhost:3000/",
+      "--format",
+      "html",
+      "--output",
+      "reports/report.html",
+      "--open",
+      "--fail-on",
+      "none",
+    ]);
+
+    expect(dependencies.writeFile).toHaveBeenCalledWith(
+      "reports/report.html",
+      expect.stringContaining("<!doctype html>"),
+      "utf8",
+    );
+    expect(dependencies.openFile).toHaveBeenCalledWith("reports/report.html");
+    expect(dependencies.stdout.log).toHaveBeenCalledWith("Opened HTML report in your default browser.");
+  });
+
   it("rejects invalid URLs and unsupported parser values", async () => {
     const dependencies = createDependencies(createReport({ critical: 0, serious: 0 }));
 
@@ -100,6 +124,18 @@ describe("open-accessibility inspect CLI", () => {
     await expect(
       runCli(dependencies, ["inspect", "http://localhost:3000/", "--fail-on", "bad"]),
     ).rejects.toThrow('Unsupported fail threshold "bad"');
+  });
+
+  it("rejects --open without HTML file output", async () => {
+    const dependencies = createDependencies(createReport({ critical: 0, serious: 0 }));
+
+    await expect(
+      runCli(dependencies, ["inspect", "http://localhost:3000/", "--format", "json", "--open"]),
+    ).rejects.toThrow("--open can only be used with --format html.");
+    await expect(
+      runCli(dependencies, ["inspect", "http://localhost:3000/", "--format", "html", "--open"]),
+    ).rejects.toThrow("--open requires --output");
+    expect(dependencies.inspect).not.toHaveBeenCalled();
   });
 
   it("sets a failing exit code when impact meets the fail threshold", async () => {
@@ -129,6 +165,7 @@ function createDependencies(report: AnalysisReport): CliDependencies {
     stderr: { error: vi.fn() },
     writeFile: vi.fn().mockResolvedValue(undefined),
     mkdir: vi.fn().mockResolvedValue(undefined),
+    openFile: vi.fn().mockResolvedValue(undefined),
   };
 }
 
