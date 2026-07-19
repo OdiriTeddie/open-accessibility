@@ -1,1 +1,1 @@
-console.log("Open Accessibility Vite example");
+console.log("Open Accessibility Vite source marker example");

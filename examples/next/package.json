@@ -11,6 +11,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@open-accessibility/react": "workspace:*",
     "next": "^15.1.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
