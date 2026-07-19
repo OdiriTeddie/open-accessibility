@@ -22,6 +22,58 @@ pnpm install
 pnpm --filter @open-accessibility/cli dev inspect http://localhost:3000
 ```
 
+## Source Marker Attributes
+
+Open Accessibility can map rendered DOM elements back to source locations when elements include
+development-only marker attributes. These attributes are optional, framework-agnostic, and are read
+from the browser DOM snapshot during inspection.
+
+Supported attributes:
+
+| Attribute | Required | Description |
+| --- | --- | --- |
+| `data-open-accessibility-source` | Yes | Source location in `file`, `file:line`, or `file:line:column` format. |
+| `data-open-accessibility-component` | No | Component name to show in CLI, JSON, and HTML reports. |
+| `data-open-accessibility-framework` | No | Framework label, for example `react`. |
+
+Fallback aliases are also supported for source-map experiments:
+
+| Attribute | Description |
+| --- | --- |
+| `data-source` | Alias for `data-open-accessibility-source`. |
+| `data-source-location` | Alias for `data-open-accessibility-source`. |
+| `data-source-file` | Source file when line and column are split into separate attributes. |
+| `data-source-line` | Positive source line number. |
+| `data-source-column` | Positive source column number. |
+| `data-component` | Alias for component name. |
+| `data-component-name` | Alias for component name. |
+
+React projects can use the helper from `@open-accessibility/react` instead of spelling attributes
+manually:
+
+```tsx
+import { createComponentSourceProps } from "@open-accessibility/react";
+
+const source = createComponentSourceProps({
+  file: "src/App.tsx",
+  componentName: "App",
+});
+
+export function App() {
+  return <button {...source(12, 4)} />;
+}
+```
+
+This emits:
+
+```html
+<button
+  data-open-accessibility-source="src/App.tsx:12:4"
+  data-open-accessibility-component="App"
+  data-open-accessibility-framework="react"
+></button>
+```
+
 ## Workspace
 
 ```text

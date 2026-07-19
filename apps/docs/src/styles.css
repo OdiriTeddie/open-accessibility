@@ -15,3 +15,25 @@ h1 {
   font-size: 44px;
   margin: 0 0 16px;
 }
+
+section {
+  margin-top: 32px;
+}
+
+code,
+pre {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+code {
+  background: #eceeeb;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+pre {
+  overflow: auto;
+  background: #eceeeb;
+  border-radius: 8px;
+  padding: 16px;
+}
