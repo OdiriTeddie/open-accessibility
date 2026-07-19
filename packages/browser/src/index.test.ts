@@ -20,6 +20,9 @@ describe("inspectPage", () => {
         id="empty-button"
         data-open-accessibility-source="fixtures/browser.tsx:10:7"
         data-open-accessibility-component="BrowserFixture"
+        data-open-accessibility-token="secret-token"
+        data-test-token="secret-token"
+        data-noisy="ignored"
       ></button>
       <img id="missing-alt" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" />
       <label for="email">Email</label>
@@ -66,7 +69,10 @@ describe("inspectPage", () => {
       id: "empty-button",
       "data-open-accessibility-source": "fixtures/browser.tsx:10:7",
       "data-open-accessibility-component": "BrowserFixture",
+      "data-open-accessibility-token": "[redacted]",
     });
+    expect(button?.attributes?.["data-test-token"]).toBeUndefined();
+    expect(button?.attributes?.["data-noisy"]).toBeUndefined();
     expect(buttonAxNode?.role?.value).toBe("button");
   });
 });

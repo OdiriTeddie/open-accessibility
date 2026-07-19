@@ -83,6 +83,25 @@ async function getAccessibilityTree(page: Page): Promise<AccessibilityTreeNode[]
 
 async function getDomSnapshot(page: Page): Promise<DomElementSnapshot[]> {
   const dom = await page.locator("body *").evaluateAll((elements) => {
+    const MAX_ATTRIBUTES_PER_ELEMENT = 24;
+    const MAX_ATTRIBUTE_VALUE_LENGTH = 180;
+    const REDACTED_ATTRIBUTE_VALUE = "[redacted]";
+    const allowedExactAttributes = new Set([
+      "alt",
+      "class",
+      "for",
+      "href",
+      "id",
+      "name",
+      "placeholder",
+      "role",
+      "src",
+      "title",
+      "type",
+      "value",
+    ]);
+    const sensitiveAttributePattern = /(?:password|token|secret|session|cookie|authorization|auth|key|credential)/i;
+
     function buildSnapshotSelector(element: HTMLElement): string {
       if (element.id) {
         return `#${CSS.escape(element.id)}`;
@@ -138,16 +157,46 @@ async function getDomSnapshot(page: Page): Promise<DomElementSnapshot[]> {
       return element.innerText?.trim().slice(0, 160) || undefined;
     }
 
+    function shouldCaptureAttribute(name: string): boolean {
+      const normalizedName = name.toLowerCase();
+      return (
+        allowedExactAttributes.has(normalizedName) ||
+        normalizedName.startsWith("aria-") ||
+        normalizedName.startsWith("data-open-accessibility-") ||
+        normalizedName.startsWith("data-source") ||
+        normalizedName === "data-component" ||
+        normalizedName === "data-component-name"
+      );
+    }
+
+    function readSnapshotAttributes(element: HTMLElement): Record<string, string> {
+      const attributes: Record<string, string> = {};
+
+      for (const name of element.getAttributeNames()) {
+        if (Object.keys(attributes).length >= MAX_ATTRIBUTES_PER_ELEMENT) {
+          break;
+        }
+
+        if (!shouldCaptureAttribute(name)) {
+          continue;
+        }
+
+        const value = element.getAttribute(name) ?? "";
+        attributes[name] = sensitiveAttributePattern.test(name)
+          ? REDACTED_ATTRIBUTE_VALUE
+          : value.slice(0, MAX_ATTRIBUTE_VALUE_LENGTH);
+      }
+
+      return attributes;
+    }
+
     return elements.slice(0, 1000).map((element) => {
       const htmlElement = element as HTMLElement;
-      const attributes = Object.fromEntries(
-        htmlElement.getAttributeNames().map((name) => [name, htmlElement.getAttribute(name) ?? ""]),
-      );
       return {
         selector: buildSnapshotSelector(htmlElement),
         tagName: htmlElement.tagName.toLowerCase(),
         outerHtml: htmlElement.outerHTML.slice(0, 500),
-        attributes,
+        attributes: readSnapshotAttributes(htmlElement),
         id: htmlElement.id || undefined,
         role: htmlElement.getAttribute("role") || undefined,
         ariaLabel: htmlElement.getAttribute("aria-label") || undefined,
