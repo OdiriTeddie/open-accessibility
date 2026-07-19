@@ -56,6 +56,9 @@ export function renderHtmlReport(report: AnalysisReport): string {
     .links { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
     .link { color: var(--accent); font-weight: 700; text-decoration: none; }
     .link:hover { text-decoration: underline; }
+    .copyable { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; max-width: 100%; }
+    .copy-button { border: 1px solid var(--border); background: var(--panel); color: var(--accent); border-radius: 6px; padding: 3px 7px; font-size: 12px; font-weight: 700; cursor: pointer; }
+    .copy-button:hover { border-color: var(--accent); }
     .impact-critical { background: var(--critical); }
     .impact-serious { background: var(--serious); }
     .impact-moderate { background: var(--moderate); }
@@ -157,6 +160,31 @@ export function renderHtmlReport(report: AnalysisReport): string {
     Array.from(document.querySelectorAll('[data-explorer-link]')).forEach((anchor) => {
       anchor.addEventListener('click', () => activateLinkTarget(anchor));
     });
+    Array.from(document.querySelectorAll('[data-copy-value]')).forEach((button) => {
+      button.addEventListener('click', async () => {
+        const value = button.dataset.copyValue || '';
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(value);
+          } else {
+            const field = document.createElement('textarea');
+            field.value = value;
+            field.setAttribute('readonly', '');
+            field.style.position = 'fixed';
+            field.style.opacity = '0';
+            document.body.appendChild(field);
+            field.select();
+            document.execCommand('copy');
+            field.remove();
+          }
+          button.textContent = 'Copied';
+          window.setTimeout(() => { button.textContent = button.dataset.copyLabel || 'Copy'; }, 1200);
+        } catch {
+          button.textContent = 'Copy failed';
+          window.setTimeout(() => { button.textContent = button.dataset.copyLabel || 'Copy'; }, 1200);
+        }
+      });
+    });
     if (window.location.hash) {
       const target = document.querySelector(window.location.hash);
       const panel = target?.closest('[role="tabpanel"]');
@@ -191,9 +219,9 @@ function renderIssue(
       ${axId ? explorerLink(`#${axId}`, "View AX node") : ""}
     </div>
     <dl>
-      <dt>DOM element</dt><dd><code>${escapeHtml(issue.location.selector || "unknown")}</code></dd>
+      <dt>DOM element</dt><dd>${renderCopyableValue(issue.location.selector || "unknown", "Copy selector")}</dd>
       <dt>Correlation</dt><dd>${escapeHtml(issue.location.correlation)}</dd>
-      <dt>Source</dt><dd><code>${escapeHtml(formatSource(issue.location.source))}</code></dd>
+      <dt>Source</dt><dd>${renderCopyableValue(formatSource(issue.location.source), "Copy source")}</dd>
       <dt>Source confidence</dt><dd>${escapeHtml(formatSourceConfidence(issue.location.source))}</dd>
       <dt>Source strategy</dt><dd>${escapeHtml(formatSourceStrategy(issue.location.source))}</dd>
       <dt>Computed role</dt><dd>${escapeHtml(issue.computedRole || "not exposed in initial snapshot")}</dd>
@@ -271,7 +299,7 @@ function renderDomElement(element: DomElementSnapshot, links: ExplorerLinks): st
     <div class="item__top">
       <div>
         <div class="meta">${escapeHtml(element.tagName)}</div>
-        <h2><code>${escapeHtml(element.selector)}</code></h2>
+        <h2>${renderCopyableValue(element.selector, "Copy selector")}</h2>
       </div>
     </div>
     <div class="links">
@@ -282,7 +310,7 @@ function renderDomElement(element: DomElementSnapshot, links: ExplorerLinks): st
       <dt>Backend node</dt><dd>${escapeHtml(String(element.backendNodeId ?? "none"))}</dd>
       <dt>Role attribute</dt><dd>${escapeHtml(element.role || "none")}</dd>
       <dt>Name hint</dt><dd>${escapeHtml(element.accessibleNameHint || "none")}</dd>
-      <dt>Source</dt><dd><code>${escapeHtml(formatSource(element.source))}</code></dd>
+      <dt>Source</dt><dd>${renderCopyableValue(formatSource(element.source), "Copy source")}</dd>
       <dt>Source confidence</dt><dd>${escapeHtml(formatSourceConfidence(element.source))}</dd>
       <dt>Source strategy</dt><dd>${escapeHtml(formatSourceStrategy(element.source))}</dd>
     </dl>
@@ -296,14 +324,14 @@ function renderSourceRow(issue: AnalysisReport["issues"][number], index: number)
     <div class="item__top">
       <div>
         <div class="meta">${escapeHtml(source?.componentName || "source")}</div>
-        <h2><code>${escapeHtml(formatSource(source))}</code></h2>
+        <h2>${renderCopyableValue(formatSource(source), "Copy source")}</h2>
       </div>
       <span class="badge impact-${escapeHtml(issue.impact)}">${escapeHtml(issue.impact)}</span>
     </div>
     <div class="links">${explorerLink(`#${issueElementId(index)}`, "View issue")}</div>
     <dl>
       <dt>Issue</dt><dd>${escapeHtml(issue.help)}</dd>
-      <dt>Selector</dt><dd><code>${escapeHtml(issue.location.selector || "unknown")}</code></dd>
+      <dt>Selector</dt><dd>${renderCopyableValue(issue.location.selector || "unknown", "Copy selector")}</dd>
       <dt>Strategy</dt><dd>${escapeHtml(source?.strategy || "none")}</dd>
       <dt>Confidence</dt><dd>${escapeHtml(source?.confidence || "none")}</dd>
     </dl>
@@ -450,6 +478,14 @@ function renderRelatedIssueLinks(issueIds: string[]): string {
 
 function renderInlineIssueLinks(issueIds: string[]): string {
   return issueIds.map((id) => explorerLink(`#${id}`, "View issue")).join("");
+}
+
+function renderCopyableValue(value: string, label: "Copy selector" | "Copy source"): string {
+  return `<span class="copyable"><code>${escapeHtml(value)}</code>${copyButton(value, label)}</span>`;
+}
+
+function copyButton(value: string, label: string): string {
+  return `<button class="copy-button" type="button" data-copy-value="${escapeHtml(value)}" data-copy-label="${escapeHtml(label)}">${escapeHtml(label)}</button>`;
 }
 
 function explorerLink(href: string, label: string): string {

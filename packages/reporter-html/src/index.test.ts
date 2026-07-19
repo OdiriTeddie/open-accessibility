@@ -31,6 +31,11 @@ describe("renderHtmlReport", () => {
     expect(html).toContain('data-explorer-link href="#dom-empty-button"');
     expect(html).toContain('data-explorer-link href="#ax-2"');
     expect(html).toContain('data-explorer-link href="#issue-1"');
+    expect(html).toContain('data-copy-value="#empty-button"');
+    expect(html).toContain('data-copy-label="Copy selector"');
+    expect(html).toContain('data-copy-value="apps/playground/src/main.tsx:12:9 (PlaygroundApp)"');
+    expect(html).toContain('data-copy-label="Copy source"');
+    expect(html).toContain("navigator.clipboard");
     expect(html).toContain("open-accessibility-report-data");
     expect(html).toContain("&lt;button id=&quot;empty-button&quot;&gt;&lt;/button&gt;");
   });
