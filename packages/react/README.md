@@ -5,7 +5,11 @@ React helpers for adding Open Accessibility source marker attributes.
 ## Usage
 
 ```tsx
-import { createComponentSourceProps, sourceProps } from "@open-accessibility/react";
+import {
+  createComponentSourceProps,
+  formatReactSourceLocation,
+  sourceProps,
+} from "@open-accessibility/react";
 
 const source = createComponentSourceProps({
   file: "src/App.tsx",
@@ -24,3 +28,17 @@ export function App() {
 ```
 
 The helpers emit `data-open-accessibility-*` attributes that the browser snapshot and source mapper can read.
+
+## API
+
+```ts
+formatReactSourceLocation({
+  file: "src/App.tsx",
+  line: 12,
+  column: 4,
+});
+```
+
+Returns `src/App.tsx:12:4`.
+
+`file` is required and must be non-empty. `line` and `column` are optional, but when provided they must be positive integers. `componentName` is optional and emitted as `data-open-accessibility-component` when provided.
