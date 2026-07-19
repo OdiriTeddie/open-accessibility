@@ -27,6 +27,8 @@ export function renderCliReport(report: AnalysisReport): string {
     lines.push(`  DOM element: ${issue.location.selector || "unknown"}`);
     lines.push(`  Correlation: ${issue.location.correlation}`);
     lines.push(`  Source: ${formatSource(issue.location.source)}`);
+    lines.push(`  Source confidence: ${issue.location.source?.confidence ?? "not mapped"}`);
+    lines.push(`  Source strategy: ${issue.location.source?.strategy ?? "not mapped"}`);
     lines.push(`  Computed role: ${issue.computedRole || "not exposed in initial snapshot"}`);
     lines.push(`  Accessible name: ${issue.accessibleName || "not exposed in initial snapshot"}`);
     lines.push(`  Suggested remediation: ${issue.suggestedRemediation}`);

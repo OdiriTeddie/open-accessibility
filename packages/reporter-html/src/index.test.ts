@@ -16,6 +16,8 @@ describe("renderHtmlReport", () => {
     expect(html).toContain("Filter current view");
     expect(html).toContain("Buttons must have discernible text");
     expect(html).toContain("apps/playground/src/main.tsx:12:9 (PlaygroundApp)");
+    expect(html).toContain("Source confidence</dt><dd>high</dd>");
+    expect(html).toContain("Source strategy</dt><dd>source-attribute</dd>");
     expect(html).toContain("open-accessibility-report-data");
     expect(html).toContain("&lt;button id=&quot;empty-button&quot;&gt;&lt;/button&gt;");
   });

@@ -13,6 +13,8 @@ describe("renderCliReport", () => {
     expect(output).toContain("DOM element: #empty-button");
     expect(output).toContain("Correlation: selector");
     expect(output).toContain("Source: apps/playground/src/main.tsx:9:10 (PlaygroundApp)");
+    expect(output).toContain("Source confidence: high");
+    expect(output).toContain("Source strategy: source-attribute");
     expect(output).toContain("Computed role: button");
   });
 });

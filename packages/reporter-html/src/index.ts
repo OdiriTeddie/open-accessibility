@@ -143,6 +143,8 @@ function renderIssue(issue: AnalysisReport["issues"][number]): string {
       <dt>DOM element</dt><dd><code>${escapeHtml(issue.location.selector || "unknown")}</code></dd>
       <dt>Correlation</dt><dd>${escapeHtml(issue.location.correlation)}</dd>
       <dt>Source</dt><dd><code>${escapeHtml(formatSource(issue.location.source))}</code></dd>
+      <dt>Source confidence</dt><dd>${escapeHtml(formatSourceConfidence(issue.location.source))}</dd>
+      <dt>Source strategy</dt><dd>${escapeHtml(formatSourceStrategy(issue.location.source))}</dd>
       <dt>Computed role</dt><dd>${escapeHtml(issue.computedRole || "not exposed in initial snapshot")}</dd>
       <dt>Accessible name</dt><dd>${escapeHtml(issue.accessibleName || "not exposed in initial snapshot")}</dd>
       <dt>Remediation</dt><dd>${escapeHtml(issue.suggestedRemediation)}</dd>
@@ -183,6 +185,8 @@ function renderDomElement(element: DomElementSnapshot): string {
       <dt>Role attribute</dt><dd>${escapeHtml(element.role || "none")}</dd>
       <dt>Name hint</dt><dd>${escapeHtml(element.accessibleNameHint || "none")}</dd>
       <dt>Source</dt><dd><code>${escapeHtml(formatSource(element.source))}</code></dd>
+      <dt>Source confidence</dt><dd>${escapeHtml(formatSourceConfidence(element.source))}</dd>
+      <dt>Source strategy</dt><dd>${escapeHtml(formatSourceStrategy(element.source))}</dd>
     </dl>
     <pre>${escapeHtml(element.outerHtml)}</pre>
   </article>`;
@@ -220,6 +224,16 @@ function formatSource(source: AnalysisReport["issues"][number]["location"]["sour
   const column = source.column ? `:${source.column}` : "";
   const component = source.componentName ? ` (${source.componentName})` : "";
   return `${source.file}${line}${column}${component}`;
+}
+
+function formatSourceConfidence(
+  source: AnalysisReport["issues"][number]["location"]["source"],
+): string {
+  return source?.confidence ?? "not mapped";
+}
+
+function formatSourceStrategy(source: AnalysisReport["issues"][number]["location"]["source"]): string {
+  return source?.strategy ?? "not mapped";
 }
 
 function metric(label: string, value: number): string {
