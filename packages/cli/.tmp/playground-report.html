@@ -1,0 +1,1262 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Open Accessibility Report</title>
+  <style>
+    :root { color-scheme: light; --bg: #f7f7f4; --panel: #ffffff; --text: #191919; --muted: #666b70; --border: #d7d9dc; --accent: #12645f; --critical: #b42318; --serious: #b54708; --moderate: #776300; --minor: #2457a6; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--text); background: var(--bg); }
+    main { max-width: 1240px; margin: 0 auto; padding: 32px 20px 48px; }
+    header { display: grid; gap: 6px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+    h1 { margin: 0; font-size: 30px; line-height: 1.15; letter-spacing: 0; }
+    h2 { margin: 0; font-size: 18px; letter-spacing: 0; }
+    p { margin: 0; color: var(--muted); }
+    code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    code { overflow-wrap: anywhere; }
+    .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 10px; margin: 20px 0; }
+    .metric { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 14px; min-height: 82px; }
+    .metric strong { display: block; font-size: 28px; line-height: 1; margin-bottom: 8px; }
+    .metric span { color: var(--muted); font-size: 13px; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 18px 0; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+    button, input, select { font: inherit; }
+    .tab { border: 1px solid var(--border); background: var(--panel); border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+    .tab[aria-selected="true"] { border-color: var(--accent); color: #fff; background: var(--accent); }
+    .search { flex: 1 1 280px; min-width: 220px; border: 1px solid var(--border); border-radius: 8px; padding: 9px 11px; background: var(--panel); color: var(--text); }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .grid { display: grid; gap: 10px; }
+    .item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+    .item.hidden { display: none; }
+    .item__top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+    .meta { color: var(--muted); font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: .04em; }
+    .badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 3px 8px; color: #fff; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+    .impact-critical { background: var(--critical); }
+    .impact-serious { background: var(--serious); }
+    .impact-moderate { background: var(--moderate); }
+    .impact-minor, .impact-unknown { background: var(--minor); }
+    dl { display: grid; grid-template-columns: minmax(120px, 180px) 1fr; gap: 8px 14px; margin: 0; }
+    dt { color: var(--muted); font-weight: 700; }
+    dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+    pre { margin: 10px 0 0; overflow: auto; white-space: pre-wrap; background: #f0f1f1; border-radius: 8px; padding: 10px; }
+    .empty { background: var(--panel); border: 1px dashed var(--border); border-radius: 8px; padding: 18px; color: var(--muted); }
+    @media (max-width: 720px) { main { padding: 22px 12px 36px; } dl { grid-template-columns: 1fr; gap: 4px; } .item__top { align-items: flex-start; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Open Accessibility Report</h1>
+      <p>http://localhost:5173/</p>
+      
+      
+      <p>Inspected at 2026-07-19T10:07:39.027Z</p>
+    </header>
+
+    <section class="summary" aria-label="Summary">
+      <div class="metric"><strong>48</strong><span>Accessibility nodes</span></div>
+      <div class="metric"><strong>24</strong><span>DOM elements</span></div>
+      <div class="metric"><strong>4</strong><span>Issues</span></div>
+      <div class="metric"><strong>2</strong><span>Critical</span></div>
+      <div class="metric"><strong>2</strong><span>Serious</span></div>
+      <div class="metric"><strong>0</strong><span>Moderate</span></div>
+      <div class="metric"><strong>0</strong><span>Minor</span></div>
+    </section>
+
+    <div class="toolbar">
+      <div class="tabs" role="tablist" aria-label="Report views">
+        <button id="tab-issues" class="tab" role="tab" data-tab="issues" aria-selected="true" aria-controls="panel-issues" type="button">Issues</button>
+        <button id="tab-accessibility-tree" class="tab" role="tab" data-tab="accessibility-tree" aria-selected="false" aria-controls="panel-accessibility-tree" type="button">Accessibility Tree</button>
+        <button id="tab-dom" class="tab" role="tab" data-tab="dom" aria-selected="false" aria-controls="panel-dom" type="button">DOM</button>
+        <button id="tab-sources" class="tab" role="tab" data-tab="sources" aria-selected="false" aria-controls="panel-sources" type="button">Sources</button>
+      </div>
+      <input class="search" type="search" placeholder="Filter current view" aria-label="Filter current view" />
+    </div>
+
+    <section id="panel-issues" class="panel active" role="tabpanel" aria-labelledby="tab-issues">
+      <div class="grid" data-filter-scope><article class="item issue" data-kind="issue">
+    <div class="item__top">
+      <div>
+        <div class="meta">button-name</div>
+        <h2>Buttons must have discernible text</h2>
+      </div>
+      <span class="badge impact-critical">critical</span>
+    </div>
+    <dl>
+      <dt>DOM element</dt><dd><code>#empty-button</code></dd>
+      <dt>Correlation</dt><dd>selector</dd>
+      <dt>Source</dt><dd><code>apps/playground/src/main.tsx:12:9 (PlaygroundApp)</code></dd>
+      <dt>Computed role</dt><dd>button</dd>
+      <dt>Accessible name</dt><dd>not exposed in initial snapshot</dd>
+      <dt>Remediation</dt><dd>Buttons must have discernible text. See https://dequeuniversity.com/rules/axe/4.12/button-name?application=axeAPI</dd>
+    </dl>
+    <pre>&lt;button id=&quot;empty-button&quot; class=&quot;problem-button&quot; type=&quot;button&quot; data-open-accessibility-source=&quot;apps/playground/src/main.tsx:12:9&quot; data-open-accessibility-component=&quot;PlaygroundApp&quot; data-open-accessibility-framework=&quot;react&quot;&gt;&lt;/button&gt;</pre>
+  </article>
+<article class="item issue" data-kind="issue">
+    <div class="item__top">
+      <div>
+        <div class="meta">document-title</div>
+        <h2>Documents must have &lt;title&gt; element to aid in navigation</h2>
+      </div>
+      <span class="badge impact-serious">serious</span>
+    </div>
+    <dl>
+      <dt>DOM element</dt><dd><code>html</code></dd>
+      <dt>Correlation</dt><dd>none</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+      <dt>Computed role</dt><dd>not exposed in initial snapshot</dd>
+      <dt>Accessible name</dt><dd>not exposed in initial snapshot</dd>
+      <dt>Remediation</dt><dd>Documents must have &lt;title&gt; element to aid in navigation. See https://dequeuniversity.com/rules/axe/4.12/document-title?application=axeAPI</dd>
+    </dl>
+    <pre>&lt;html&gt;</pre>
+  </article>
+<article class="item issue" data-kind="issue">
+    <div class="item__top">
+      <div>
+        <div class="meta">html-has-lang</div>
+        <h2>&lt;html&gt; element must have a lang attribute</h2>
+      </div>
+      <span class="badge impact-serious">serious</span>
+    </div>
+    <dl>
+      <dt>DOM element</dt><dd><code>html</code></dd>
+      <dt>Correlation</dt><dd>none</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+      <dt>Computed role</dt><dd>not exposed in initial snapshot</dd>
+      <dt>Accessible name</dt><dd>not exposed in initial snapshot</dd>
+      <dt>Remediation</dt><dd>&lt;html&gt; element must have a lang attribute. See https://dequeuniversity.com/rules/axe/4.12/html-has-lang?application=axeAPI</dd>
+    </dl>
+    <pre>&lt;html&gt;</pre>
+  </article>
+<article class="item issue" data-kind="issue">
+    <div class="item__top">
+      <div>
+        <div class="meta">image-alt</div>
+        <h2>Images must have alternative text</h2>
+      </div>
+      <span class="badge impact-critical">critical</span>
+    </div>
+    <dl>
+      <dt>DOM element</dt><dd><code>#missing-alt-image</code></dd>
+      <dt>Correlation</dt><dd>selector</dd>
+      <dt>Source</dt><dd><code>apps/playground/src/main.tsx:29:9 (PlaygroundApp)</code></dd>
+      <dt>Computed role</dt><dd>img</dd>
+      <dt>Accessible name</dt><dd>not exposed in initial snapshot</dd>
+      <dt>Remediation</dt><dd>Images must have alternative text. See https://dequeuniversity.com/rules/axe/4.12/image-alt?application=axeAPI</dd>
+    </dl>
+    <pre>&lt;img id=&quot;missing-alt-image&quot; data-open-accessibility-source=&quot;apps/playground/src/main.tsx:29:9&quot; data-open-accessibility-component=&quot;PlaygroundApp&quot; data-open-accessibility-framework=&quot;react&quot; src=&quot;data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==&quot;&gt;</pre>
+  </article></div>
+    </section>
+    <section id="panel-accessibility-tree" class="panel" role="tabpanel" aria-labelledby="tab-accessibility-tree">
+      <div class="grid" data-filter-scope><article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 2</div>
+        <h2>RootWebArea</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>not named</dd>
+      <dt>Backend DOM node</dt><dd>2</dd>
+      <dt>Children</dt><dd>8</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 8</div>
+        <h2>none</h2>
+      </div>
+      <span class="badge impact-unknown">ignored</span>
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>not named</dd>
+      <dt>Backend DOM node</dt><dd>8</dd>
+      <dt>Children</dt><dd>3</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 3</div>
+        <h2>none</h2>
+      </div>
+      <span class="badge impact-unknown">ignored</span>
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>not named</dd>
+      <dt>Backend DOM node</dt><dd>3</dd>
+      <dt>Children</dt><dd>12</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 12</div>
+        <h2>generic</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>not named</dd>
+      <dt>Backend DOM node</dt><dd>12</dd>
+      <dt>Children</dt><dd>6</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 6</div>
+        <h2>main</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>not named</dd>
+      <dt>Backend DOM node</dt><dd>6</dd>
+      <dt>Children</dt><dd>13, 14, 18, 20, 34</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 13</div>
+        <h2>heading</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Accessibility Playground</dd>
+      <dt>Backend DOM node</dt><dd>13</dd>
+      <dt>Children</dt><dd>39</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 14</div>
+        <h2>region</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Buttons</dd>
+      <dt>Backend DOM node</dt><dd>14</dd>
+      <dt>Children</dt><dd>15, 16, 17</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 18</div>
+        <h2>region</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Images</dd>
+      <dt>Backend DOM node</dt><dd>18</dd>
+      <dt>Children</dt><dd>19, 5</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 20</div>
+        <h2>region</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Forms</dd>
+      <dt>Backend DOM node</dt><dd>20</dd>
+      <dt>Children</dt><dd>21, 22</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 34</div>
+        <h2>region</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Landmarks</dd>
+      <dt>Backend DOM node</dt><dd>34</dd>
+      <dt>Children</dt><dd>7, 35</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 39</div>
+        <h2>StaticText</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Accessibility Playground</dd>
+      <dt>Backend DOM node</dt><dd>39</dd>
+      <dt>Children</dt><dd>-1000000002</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 15</div>
+        <h2>heading</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Buttons</dd>
+      <dt>Backend DOM node</dt><dd>15</dd>
+      <dt>Children</dt><dd>40</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 16</div>
+        <h2>button</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Save changes</dd>
+      <dt>Backend DOM node</dt><dd>16</dd>
+      <dt>Children</dt><dd>none</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 17</div>
+        <h2>button</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>not named</dd>
+      <dt>Backend DOM node</dt><dd>17</dd>
+      <dt>Children</dt><dd>none</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 19</div>
+        <h2>heading</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Images</dd>
+      <dt>Backend DOM node</dt><dd>19</dd>
+      <dt>Children</dt><dd>41</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 5</div>
+        <h2>image</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>not named</dd>
+      <dt>Backend DOM node</dt><dd>5</dd>
+      <dt>Children</dt><dd>none</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 21</div>
+        <h2>heading</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Forms</dd>
+      <dt>Backend DOM node</dt><dd>21</dd>
+      <dt>Children</dt><dd>42</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 22</div>
+        <h2>form</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Example checkout</dd>
+      <dt>Backend DOM node</dt><dd>22</dd>
+      <dt>Children</dt><dd>23, 27, 33</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 7</div>
+        <h2>heading</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Landmarks</dd>
+      <dt>Backend DOM node</dt><dd>7</dd>
+      <dt>Children</dt><dd>45</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 35</div>
+        <h2>navigation</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Primary</dd>
+      <dt>Backend DOM node</dt><dd>35</dd>
+      <dt>Children</dt><dd>36, 37</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node -1000000002</div>
+        <h2>InlineTextBox</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Accessibility Playground</dd>
+      <dt>Backend DOM node</dt><dd>none</dd>
+      <dt>Children</dt><dd>none</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 40</div>
+        <h2>StaticText</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Buttons</dd>
+      <dt>Backend DOM node</dt><dd>40</dd>
+      <dt>Children</dt><dd>-1000000003</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 41</div>
+        <h2>StaticText</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Images</dd>
+      <dt>Backend DOM node</dt><dd>41</dd>
+      <dt>Children</dt><dd>-1000000004</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 42</div>
+        <h2>StaticText</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Forms</dd>
+      <dt>Backend DOM node</dt><dd>42</dd>
+      <dt>Children</dt><dd>-1000000005</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 23</div>
+        <h2>LabelText</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>not named</dd>
+      <dt>Backend DOM node</dt><dd>23</dd>
+      <dt>Children</dt><dd>43, 24</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 27</div>
+        <h2>searchbox</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Search catalog</dd>
+      <dt>Backend DOM node</dt><dd>27</dd>
+      <dt>Children</dt><dd>28, 29</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 33</div>
+        <h2>button</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Inspect Example</dd>
+      <dt>Backend DOM node</dt><dd>33</dd>
+      <dt>Children</dt><dd>44</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 45</div>
+        <h2>StaticText</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Landmarks</dd>
+      <dt>Backend DOM node</dt><dd>45</dd>
+      <dt>Children</dt><dd>-1000000008</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 36</div>
+        <h2>link</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Buttons</dd>
+      <dt>Backend DOM node</dt><dd>36</dd>
+      <dt>Children</dt><dd>46</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 37</div>
+        <h2>link</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Forms</dd>
+      <dt>Backend DOM node</dt><dd>37</dd>
+      <dt>Children</dt><dd>47</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node -1000000003</div>
+        <h2>InlineTextBox</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Buttons</dd>
+      <dt>Backend DOM node</dt><dd>none</dd>
+      <dt>Children</dt><dd>none</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node -1000000004</div>
+        <h2>InlineTextBox</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Images</dd>
+      <dt>Backend DOM node</dt><dd>none</dd>
+      <dt>Children</dt><dd>none</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node -1000000005</div>
+        <h2>InlineTextBox</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Forms</dd>
+      <dt>Backend DOM node</dt><dd>none</dd>
+      <dt>Children</dt><dd>none</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 43</div>
+        <h2>StaticText</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Email</dd>
+      <dt>Backend DOM node</dt><dd>43</dd>
+      <dt>Children</dt><dd>-1000000006</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 24</div>
+        <h2>textbox</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Email</dd>
+      <dt>Backend DOM node</dt><dd>24</dd>
+      <dt>Children</dt><dd>25, 26</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 28</div>
+        <h2>none</h2>
+      </div>
+      <span class="badge impact-unknown">ignored</span>
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>not named</dd>
+      <dt>Backend DOM node</dt><dd>28</dd>
+      <dt>Children</dt><dd>none</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 29</div>
+        <h2>none</h2>
+      </div>
+      <span class="badge impact-unknown">ignored</span>
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>not named</dd>
+      <dt>Backend DOM node</dt><dd>29</dd>
+      <dt>Children</dt><dd>31</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 31</div>
+        <h2>generic</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>not named</dd>
+      <dt>Backend DOM node</dt><dd>31</dd>
+      <dt>Children</dt><dd>none</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 44</div>
+        <h2>StaticText</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Inspect Example</dd>
+      <dt>Backend DOM node</dt><dd>44</dd>
+      <dt>Children</dt><dd>-1000000007</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node -1000000008</div>
+        <h2>InlineTextBox</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Landmarks</dd>
+      <dt>Backend DOM node</dt><dd>none</dd>
+      <dt>Children</dt><dd>none</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 46</div>
+        <h2>StaticText</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Buttons</dd>
+      <dt>Backend DOM node</dt><dd>46</dd>
+      <dt>Children</dt><dd>-1000000009</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 47</div>
+        <h2>StaticText</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Forms</dd>
+      <dt>Backend DOM node</dt><dd>47</dd>
+      <dt>Children</dt><dd>-1000000010</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node -1000000006</div>
+        <h2>InlineTextBox</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Email</dd>
+      <dt>Backend DOM node</dt><dd>none</dd>
+      <dt>Children</dt><dd>none</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 25</div>
+        <h2>none</h2>
+      </div>
+      <span class="badge impact-unknown">ignored</span>
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>not named</dd>
+      <dt>Backend DOM node</dt><dd>25</dd>
+      <dt>Children</dt><dd>none</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node 26</div>
+        <h2>generic</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>not named</dd>
+      <dt>Backend DOM node</dt><dd>26</dd>
+      <dt>Children</dt><dd>none</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node -1000000007</div>
+        <h2>InlineTextBox</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Inspect Example</dd>
+      <dt>Backend DOM node</dt><dd>none</dd>
+      <dt>Children</dt><dd>none</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node -1000000009</div>
+        <h2>InlineTextBox</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Buttons</dd>
+      <dt>Backend DOM node</dt><dd>none</dd>
+      <dt>Children</dt><dd>none</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="accessibility-node">
+    <div class="item__top">
+      <div>
+        <div class="meta">AX node -1000000010</div>
+        <h2>InlineTextBox</h2>
+      </div>
+      
+    </div>
+    <dl>
+      <dt>Accessible name</dt><dd>Forms</dd>
+      <dt>Backend DOM node</dt><dd>none</dd>
+      <dt>Children</dt><dd>none</dd>
+    </dl>
+  </article></div>
+    </section>
+    <section id="panel-dom" class="panel" role="tabpanel" aria-labelledby="tab-dom">
+      <div class="grid" data-filter-scope><article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">div</div>
+        <h2><code>#root</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Accessibility Playground
+Buttons
+Images
+Forms
+Email
+Inspect Example
+Landmarks
+Buttons
+Forms</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;div id=&quot;root&quot;&gt;&lt;main&gt;&lt;h1&gt;Accessibility Playground&lt;/h1&gt;&lt;section aria-labelledby=&quot;buttons-heading&quot;&gt;&lt;h2 id=&quot;buttons-heading&quot;&gt;Buttons&lt;/h2&gt;&lt;button id=&quot;named-button&quot; type=&quot;button&quot; aria-label=&quot;Save changes&quot;&gt;&lt;/button&gt;&lt;button id=&quot;empty-button&quot; class=&quot;problem-button&quot; type=&quot;button&quot; data-open-accessibility-source=&quot;apps/playground/src/main.tsx:12:9&quot; data-open-accessibility-component=&quot;PlaygroundApp&quot; data-open-accessibility-framework=&quot;react&quot;&gt;&lt;/button&gt;&lt;/section&gt;&lt;section aria-labelledby=&quot;images-heading&quot;&gt;&lt;h2 id=&quot;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">main</div>
+        <h2><code>html &gt; body &gt; div &gt; main</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Accessibility Playground
+Buttons
+Images
+Forms
+Email
+Inspect Example
+Landmarks
+Buttons
+Forms</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;main&gt;&lt;h1&gt;Accessibility Playground&lt;/h1&gt;&lt;section aria-labelledby=&quot;buttons-heading&quot;&gt;&lt;h2 id=&quot;buttons-heading&quot;&gt;Buttons&lt;/h2&gt;&lt;button id=&quot;named-button&quot; type=&quot;button&quot; aria-label=&quot;Save changes&quot;&gt;&lt;/button&gt;&lt;button id=&quot;empty-button&quot; class=&quot;problem-button&quot; type=&quot;button&quot; data-open-accessibility-source=&quot;apps/playground/src/main.tsx:12:9&quot; data-open-accessibility-component=&quot;PlaygroundApp&quot; data-open-accessibility-framework=&quot;react&quot;&gt;&lt;/button&gt;&lt;/section&gt;&lt;section aria-labelledby=&quot;images-heading&quot;&gt;&lt;h2 id=&quot;images-heading&quot;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">h1</div>
+        <h2><code>body &gt; div &gt; main &gt; h1</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Accessibility Playground</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;h1&gt;Accessibility Playground&lt;/h1&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">section</div>
+        <h2><code>body &gt; div &gt; main &gt; section:nth-of-type(1)</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Buttons</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;section aria-labelledby=&quot;buttons-heading&quot;&gt;&lt;h2 id=&quot;buttons-heading&quot;&gt;Buttons&lt;/h2&gt;&lt;button id=&quot;named-button&quot; type=&quot;button&quot; aria-label=&quot;Save changes&quot;&gt;&lt;/button&gt;&lt;button id=&quot;empty-button&quot; class=&quot;problem-button&quot; type=&quot;button&quot; data-open-accessibility-source=&quot;apps/playground/src/main.tsx:12:9&quot; data-open-accessibility-component=&quot;PlaygroundApp&quot; data-open-accessibility-framework=&quot;react&quot;&gt;&lt;/button&gt;&lt;/section&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">h2</div>
+        <h2><code>#buttons-heading</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Buttons</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;h2 id=&quot;buttons-heading&quot;&gt;Buttons&lt;/h2&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">button</div>
+        <h2><code>#named-button</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Save changes</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;button id=&quot;named-button&quot; type=&quot;button&quot; aria-label=&quot;Save changes&quot;&gt;&lt;/button&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">button</div>
+        <h2><code>#empty-button</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>none</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;button id=&quot;empty-button&quot; class=&quot;problem-button&quot; type=&quot;button&quot; data-open-accessibility-source=&quot;apps/playground/src/main.tsx:12:9&quot; data-open-accessibility-component=&quot;PlaygroundApp&quot; data-open-accessibility-framework=&quot;react&quot;&gt;&lt;/button&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">section</div>
+        <h2><code>body &gt; div &gt; main &gt; section:nth-of-type(2)</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Images</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;section aria-labelledby=&quot;images-heading&quot;&gt;&lt;h2 id=&quot;images-heading&quot;&gt;Images&lt;/h2&gt;&lt;img id=&quot;decorative-image&quot; alt=&quot;&quot; src=&quot;data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==&quot;&gt;&lt;img id=&quot;missing-alt-image&quot; data-open-accessibility-source=&quot;apps/playground/src/main.tsx:29:9&quot; data-open-accessibility-component=&quot;PlaygroundApp&quot; data-open-accessibility-framework=&quot;react&quot; src=&quot;data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==&quot;&gt;&lt;/section&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">h2</div>
+        <h2><code>#images-heading</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Images</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;h2 id=&quot;images-heading&quot;&gt;Images&lt;/h2&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">img</div>
+        <h2><code>#decorative-image</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>none</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;img id=&quot;decorative-image&quot; alt=&quot;&quot; src=&quot;data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==&quot;&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">img</div>
+        <h2><code>#missing-alt-image</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>none</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;img id=&quot;missing-alt-image&quot; data-open-accessibility-source=&quot;apps/playground/src/main.tsx:29:9&quot; data-open-accessibility-component=&quot;PlaygroundApp&quot; data-open-accessibility-framework=&quot;react&quot; src=&quot;data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==&quot;&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">section</div>
+        <h2><code>body &gt; div &gt; main &gt; section:nth-of-type(3)</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Forms</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;section aria-labelledby=&quot;forms-heading&quot;&gt;&lt;h2 id=&quot;forms-heading&quot;&gt;Forms&lt;/h2&gt;&lt;form aria-label=&quot;Example checkout&quot;&gt;&lt;label&gt;Email&lt;input id=&quot;email&quot; placeholder=&quot;developer@example.com&quot; type=&quot;email&quot;&gt;&lt;/label&gt;&lt;input id=&quot;unlabelled-search&quot; placeholder=&quot;Search catalog&quot; data-open-accessibility-source=&quot;apps/playground/src/main.tsx:42:11&quot; data-open-accessibility-component=&quot;PlaygroundApp&quot; data-open-accessibility-framework=&quot;react&quot; type=&quot;search&quot;&gt;&lt;button type=&quot;submit&quot;&gt;Inspect Example&lt;/button&gt;&lt;/form&gt;&lt;/section&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">h2</div>
+        <h2><code>#forms-heading</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Forms</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;h2 id=&quot;forms-heading&quot;&gt;Forms&lt;/h2&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">form</div>
+        <h2><code>div &gt; main &gt; section:nth-of-type(3) &gt; form</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Example checkout</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;form aria-label=&quot;Example checkout&quot;&gt;&lt;label&gt;Email&lt;input id=&quot;email&quot; placeholder=&quot;developer@example.com&quot; type=&quot;email&quot;&gt;&lt;/label&gt;&lt;input id=&quot;unlabelled-search&quot; placeholder=&quot;Search catalog&quot; data-open-accessibility-source=&quot;apps/playground/src/main.tsx:42:11&quot; data-open-accessibility-component=&quot;PlaygroundApp&quot; data-open-accessibility-framework=&quot;react&quot; type=&quot;search&quot;&gt;&lt;button type=&quot;submit&quot;&gt;Inspect Example&lt;/button&gt;&lt;/form&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">label</div>
+        <h2><code>main &gt; section:nth-of-type(3) &gt; form &gt; label</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Email</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;label&gt;Email&lt;input id=&quot;email&quot; placeholder=&quot;developer@example.com&quot; type=&quot;email&quot;&gt;&lt;/label&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">input</div>
+        <h2><code>#email</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>none</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;input id=&quot;email&quot; placeholder=&quot;developer@example.com&quot; type=&quot;email&quot;&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">input</div>
+        <h2><code>#unlabelled-search</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>none</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;input id=&quot;unlabelled-search&quot; placeholder=&quot;Search catalog&quot; data-open-accessibility-source=&quot;apps/playground/src/main.tsx:42:11&quot; data-open-accessibility-component=&quot;PlaygroundApp&quot; data-open-accessibility-framework=&quot;react&quot; type=&quot;search&quot;&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">button</div>
+        <h2><code>main &gt; section:nth-of-type(3) &gt; form &gt; button</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Inspect Example</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;button type=&quot;submit&quot;&gt;Inspect Example&lt;/button&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">section</div>
+        <h2><code>body &gt; div &gt; main &gt; section:nth-of-type(4)</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Landmarks</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;section aria-labelledby=&quot;landmarks-heading&quot;&gt;&lt;h2 id=&quot;landmarks-heading&quot;&gt;Landmarks&lt;/h2&gt;&lt;nav aria-label=&quot;Primary&quot;&gt;&lt;a href=&quot;#buttons-heading&quot;&gt;Buttons&lt;/a&gt;&lt;a href=&quot;#forms-heading&quot;&gt;Forms&lt;/a&gt;&lt;/nav&gt;&lt;/section&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">h2</div>
+        <h2><code>#landmarks-heading</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Landmarks</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;h2 id=&quot;landmarks-heading&quot;&gt;Landmarks&lt;/h2&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">nav</div>
+        <h2><code>div &gt; main &gt; section:nth-of-type(4) &gt; nav</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Primary</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;nav aria-label=&quot;Primary&quot;&gt;&lt;a href=&quot;#buttons-heading&quot;&gt;Buttons&lt;/a&gt;&lt;a href=&quot;#forms-heading&quot;&gt;Forms&lt;/a&gt;&lt;/nav&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">a</div>
+        <h2><code>main &gt; section:nth-of-type(4) &gt; nav &gt; a:nth-of-type(1)</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Buttons</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;a href=&quot;#buttons-heading&quot;&gt;Buttons&lt;/a&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">a</div>
+        <h2><code>main &gt; section:nth-of-type(4) &gt; nav &gt; a:nth-of-type(2)</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>Forms</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;a href=&quot;#forms-heading&quot;&gt;Forms&lt;/a&gt;</pre>
+  </article>
+<article class="item" data-kind="dom-element">
+    <div class="item__top">
+      <div>
+        <div class="meta">script</div>
+        <h2><code>html &gt; body &gt; script</code></h2>
+      </div>
+    </div>
+    <dl>
+      <dt>Backend node</dt><dd>none</dd>
+      <dt>Role attribute</dt><dd>none</dd>
+      <dt>Name hint</dt><dd>none</dd>
+      <dt>Source</dt><dd><code>not mapped</code></dd>
+    </dl>
+    <pre>&lt;script type=&quot;module&quot; src=&quot;/src/main.tsx&quot;&gt;&lt;/script&gt;</pre>
+  </article></div>
+    </section>
+    <section id="panel-sources" class="panel" role="tabpanel" aria-labelledby="tab-sources">
+      <div class="grid" data-filter-scope><article class="item" data-kind="source">
+    <div class="item__top">
+      <div>
+        <div class="meta">PlaygroundApp</div>
+        <h2><code>apps/playground/src/main.tsx:12:9 (PlaygroundApp)</code></h2>
+      </div>
+      <span class="badge impact-critical">critical</span>
+    </div>
+    <dl>
+      <dt>Issue</dt><dd>Buttons must have discernible text</dd>
+      <dt>Selector</dt><dd><code>#empty-button</code></dd>
+      <dt>Strategy</dt><dd>source-attribute</dd>
+      <dt>Confidence</dt><dd>high</dd>
+    </dl>
+  </article>
+<article class="item" data-kind="source">
+    <div class="item__top">
+      <div>
+        <div class="meta">PlaygroundApp</div>
+        <h2><code>apps/playground/src/main.tsx:29:9 (PlaygroundApp)</code></h2>
+      </div>
+      <span class="badge impact-critical">critical</span>
+    </div>
+    <dl>
+      <dt>Issue</dt><dd>Images must have alternative text</dd>
+      <dt>Selector</dt><dd><code>#missing-alt-image</code></dd>
+      <dt>Strategy</dt><dd>source-attribute</dd>
+      <dt>Confidence</dt><dd>high</dd>
+    </dl>
+  </article></div>
+    </section>
+  </main>
+  <script id="open-accessibility-report-data" type="application/json">{"url":"http://localhost:5173/","finalUrl":"http://localhost:5173/","title":"","inspectedAt":"2026-07-19T10:07:39.027Z","totals":{"accessibilityNodes":48,"domElements":24,"issues":4,"critical":2,"serious":2,"moderate":0,"minor":0,"unknown":0},"issues":[{"id":"button-name","impact":"critical","description":"Ensure buttons have discernible text","help":"Buttons must have discernible text","helpUrl":"https://dequeuniversity.com/rules/axe/4.12/button-name?application=axeAPI","location":{"selector":"#empty-button","target":["#empty-button"],"html":"\u003cbutton id=\"empty-button\" class=\"problem-button\" type=\"button\" data-open-accessibility-source=\"apps/playground/src/main.tsx:12:9\" data-open-accessibility-component=\"PlaygroundApp\" data-open-accessibility-framework=\"react\">\u003c/button>","domElement":{"selector":"#empty-button","tagName":"button","outerHtml":"\u003cbutton id=\"empty-button\" class=\"problem-button\" type=\"button\" data-open-accessibility-source=\"apps/playground/src/main.tsx:12:9\" data-open-accessibility-component=\"PlaygroundApp\" data-open-accessibility-framework=\"react\">\u003c/button>","attributes":{"id":"empty-button","class":"problem-button","type":"button","data-open-accessibility-source":"apps/playground/src/main.tsx:12:9","data-open-accessibility-component":"PlaygroundApp","data-open-accessibility-framework":"react"},"id":"empty-button"},"correlation":"selector","source":{"file":"apps/playground/src/main.tsx","line":12,"column":9,"componentName":"PlaygroundApp","framework":"react","confidence":"high","strategy":"source-attribute"}},"computedRole":"button","suggestedRemediation":"Buttons must have discernible text. See https://dequeuniversity.com/rules/axe/4.12/button-name?application=axeAPI"},{"id":"document-title","impact":"serious","description":"Ensure each HTML document contains a non-empty \u003ctitle> element","help":"Documents must have \u003ctitle> element to aid in navigation","helpUrl":"https://dequeuniversity.com/rules/axe/4.12/document-title?application=axeAPI","location":{"selector":"html","target":["html"],"html":"\u003chtml>","correlation":"none"},"suggestedRemediation":"Documents must have \u003ctitle> element to aid in navigation. See https://dequeuniversity.com/rules/axe/4.12/document-title?application=axeAPI"},{"id":"html-has-lang","impact":"serious","description":"Ensure every HTML document has a lang attribute","help":"\u003chtml> element must have a lang attribute","helpUrl":"https://dequeuniversity.com/rules/axe/4.12/html-has-lang?application=axeAPI","location":{"selector":"html","target":["html"],"html":"\u003chtml>","correlation":"none"},"suggestedRemediation":"\u003chtml> element must have a lang attribute. See https://dequeuniversity.com/rules/axe/4.12/html-has-lang?application=axeAPI"},{"id":"image-alt","impact":"critical","description":"Ensure \u003cimg> elements have alternative text or a role of none or presentation","help":"Images must have alternative text","helpUrl":"https://dequeuniversity.com/rules/axe/4.12/image-alt?application=axeAPI","location":{"selector":"#missing-alt-image","target":["#missing-alt-image"],"html":"\u003cimg id=\"missing-alt-image\" data-open-accessibility-source=\"apps/playground/src/main.tsx:29:9\" data-open-accessibility-component=\"PlaygroundApp\" data-open-accessibility-framework=\"react\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==\">","domElement":{"selector":"#missing-alt-image","tagName":"img","outerHtml":"\u003cimg id=\"missing-alt-image\" data-open-accessibility-source=\"apps/playground/src/main.tsx:29:9\" data-open-accessibility-component=\"PlaygroundApp\" data-open-accessibility-framework=\"react\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==\">","attributes":{"id":"missing-alt-image","data-open-accessibility-source":"apps/playground/src/main.tsx:29:9","data-open-accessibility-component":"PlaygroundApp","data-open-accessibility-framework":"react","src":"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="},"id":"missing-alt-image"},"correlation":"selector","source":{"file":"apps/playground/src/main.tsx","line":29,"column":9,"componentName":"PlaygroundApp","framework":"react","confidence":"high","strategy":"source-attribute"}},"computedRole":"img","suggestedRemediation":"Images must have alternative text. See https://dequeuniversity.com/rules/axe/4.12/image-alt?application=axeAPI"}],"snapshot":{"accessibilityTree":[{"nodeId":"2","ignored":false,"role":{"type":"internalRole","value":"RootWebArea"},"chromeRole":{"type":"internalRole","value":144},"name":{"type":"computedString","value":"","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"},{"type":"attribute","attribute":"aria-label","superseded":true},{"type":"relatedElement","nativeSource":"title"}]},"properties":[{"name":"focusable","value":{"type":"booleanOrUndefined","value":true}},{"name":"focused","value":{"type":"booleanOrUndefined","value":true}},{"name":"url","value":{"type":"string","value":"http://localhost:5173/"}}],"childIds":["8"],"backendDOMNodeId":2,"frameId":"822465AC10C709CC9554D7316CEA6EDC"},{"nodeId":"8","ignored":true,"ignoredReasons":[{"name":"uninteresting","value":{"type":"boolean","value":true}}],"role":{"type":"role","value":"none"},"chromeRole":{"type":"internalRole","value":0},"parentId":"2","childIds":["3"],"backendDOMNodeId":8},{"nodeId":"3","ignored":true,"ignoredReasons":[{"name":"uninteresting","value":{"type":"boolean","value":true}}],"role":{"type":"role","value":"none"},"chromeRole":{"type":"internalRole","value":0},"parentId":"8","childIds":["12"],"backendDOMNodeId":3},{"nodeId":"12","ignored":false,"role":{"type":"role","value":"generic"},"chromeRole":{"type":"internalRole","value":88},"name":{"type":"computedString","value":"","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"}]},"properties":[],"parentId":"3","childIds":["6"],"backendDOMNodeId":12},{"nodeId":"6","ignored":false,"role":{"type":"role","value":"main"},"chromeRole":{"type":"internalRole","value":118},"name":{"type":"computedString","value":"","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"},{"type":"attribute","attribute":"title"}]},"properties":[],"parentId":"12","childIds":["13","14","18","20","34"],"backendDOMNodeId":6},{"nodeId":"13","ignored":false,"role":{"type":"role","value":"heading"},"chromeRole":{"type":"internalRole","value":96},"name":{"type":"computedString","value":"Accessibility Playground","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"},{"type":"contents","value":{"type":"computedString","value":"Accessibility Playground"}},{"type":"attribute","attribute":"title","superseded":true}]},"properties":[{"name":"level","value":{"type":"integer","value":1}}],"parentId":"6","childIds":["39"],"backendDOMNodeId":13},{"nodeId":"14","ignored":false,"role":{"type":"role","value":"region"},"chromeRole":{"type":"internalRole","value":143},"name":{"type":"computedString","value":"Buttons","sources":[{"type":"relatedElement","value":{"type":"computedString","value":"Buttons"},"attribute":"aria-labelledby","attributeValue":{"type":"idrefList","value":"buttons-heading","relatedNodes":[{"backendDOMNodeId":15,"idref":"buttons-heading","text":"Buttons"}]}},{"type":"attribute","attribute":"aria-label","superseded":true},{"type":"attribute","attribute":"title","superseded":true}]},"properties":[{"name":"labelledby","value":{"type":"nodeList","relatedNodes":[{"backendDOMNodeId":15,"idref":"buttons-heading","text":"Buttons"}]}}],"parentId":"6","childIds":["15","16","17"],"backendDOMNodeId":14},{"nodeId":"18","ignored":false,"role":{"type":"role","value":"region"},"chromeRole":{"type":"internalRole","value":143},"name":{"type":"computedString","value":"Images","sources":[{"type":"relatedElement","value":{"type":"computedString","value":"Images"},"attribute":"aria-labelledby","attributeValue":{"type":"idrefList","value":"images-heading","relatedNodes":[{"backendDOMNodeId":19,"idref":"images-heading","text":"Images"}]}},{"type":"attribute","attribute":"aria-label","superseded":true},{"type":"attribute","attribute":"title","superseded":true}]},"properties":[{"name":"labelledby","value":{"type":"nodeList","relatedNodes":[{"backendDOMNodeId":19,"idref":"images-heading","text":"Images"}]}}],"parentId":"6","childIds":["19","5"],"backendDOMNodeId":18},{"nodeId":"20","ignored":false,"role":{"type":"role","value":"region"},"chromeRole":{"type":"internalRole","value":143},"name":{"type":"computedString","value":"Forms","sources":[{"type":"relatedElement","value":{"type":"computedString","value":"Forms"},"attribute":"aria-labelledby","attributeValue":{"type":"idrefList","value":"forms-heading","relatedNodes":[{"backendDOMNodeId":21,"idref":"forms-heading","text":"Forms"}]}},{"type":"attribute","attribute":"aria-label","superseded":true},{"type":"attribute","attribute":"title","superseded":true}]},"properties":[{"name":"labelledby","value":{"type":"nodeList","relatedNodes":[{"backendDOMNodeId":21,"idref":"forms-heading","text":"Forms"}]}}],"parentId":"6","childIds":["21","22"],"backendDOMNodeId":20},{"nodeId":"34","ignored":false,"role":{"type":"role","value":"region"},"chromeRole":{"type":"internalRole","value":143},"name":{"type":"computedString","value":"Landmarks","sources":[{"type":"relatedElement","value":{"type":"computedString","value":"Landmarks"},"attribute":"aria-labelledby","attributeValue":{"type":"idrefList","value":"landmarks-heading","relatedNodes":[{"backendDOMNodeId":7,"idref":"landmarks-heading","text":"Landmarks"}]}},{"type":"attribute","attribute":"aria-label","superseded":true},{"type":"attribute","attribute":"title","superseded":true}]},"properties":[{"name":"labelledby","value":{"type":"nodeList","relatedNodes":[{"backendDOMNodeId":7,"idref":"landmarks-heading","text":"Landmarks"}]}}],"parentId":"6","childIds":["7","35"],"backendDOMNodeId":34},{"nodeId":"39","ignored":false,"role":{"type":"internalRole","value":"StaticText"},"chromeRole":{"type":"internalRole","value":158},"name":{"type":"computedString","value":"Accessibility Playground","sources":[{"type":"contents","value":{"type":"computedString","value":"Accessibility Playground"}}]},"properties":[],"parentId":"13","childIds":["-1000000002"],"backendDOMNodeId":39},{"nodeId":"15","ignored":false,"role":{"type":"role","value":"heading"},"chromeRole":{"type":"internalRole","value":96},"name":{"type":"computedString","value":"Buttons","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"},{"type":"contents","value":{"type":"computedString","value":"Buttons"}},{"type":"attribute","attribute":"title","superseded":true}]},"properties":[{"name":"level","value":{"type":"integer","value":2}}],"parentId":"14","childIds":["40"],"backendDOMNodeId":15},{"nodeId":"16","ignored":false,"role":{"type":"role","value":"button"},"chromeRole":{"type":"internalRole","value":9},"name":{"type":"computedString","value":"Save changes","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","value":{"type":"computedString","value":"Save changes"},"attribute":"aria-label","attributeValue":{"type":"string","value":"Save changes"}},{"type":"relatedElement","superseded":true,"nativeSource":"label"},{"type":"contents","superseded":true},{"type":"attribute","attribute":"title","superseded":true}]},"properties":[{"name":"invalid","value":{"type":"token","value":"false"}},{"name":"focusable","value":{"type":"booleanOrUndefined","value":true}}],"parentId":"14","childIds":[],"backendDOMNodeId":16},{"nodeId":"17","ignored":false,"role":{"type":"role","value":"button"},"chromeRole":{"type":"internalRole","value":9},"name":{"type":"computedString","value":"","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"},{"type":"relatedElement","nativeSource":"label"},{"type":"contents"},{"type":"attribute","attribute":"title"}]},"properties":[{"name":"invalid","value":{"type":"token","value":"false"}},{"name":"focusable","value":{"type":"booleanOrUndefined","value":true}}],"parentId":"14","childIds":[],"backendDOMNodeId":17},{"nodeId":"19","ignored":false,"role":{"type":"role","value":"heading"},"chromeRole":{"type":"internalRole","value":96},"name":{"type":"computedString","value":"Images","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"},{"type":"contents","value":{"type":"computedString","value":"Images"}},{"type":"attribute","attribute":"title","superseded":true}]},"properties":[{"name":"level","value":{"type":"integer","value":2}}],"parentId":"18","childIds":["41"],"backendDOMNodeId":19},{"nodeId":"5","ignored":false,"role":{"type":"role","value":"image"},"chromeRole":{"type":"internalRole","value":99},"name":{"type":"computedString","value":"","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"},{"type":"attribute","attribute":"alt"},{"type":"attribute","attribute":"title"}]},"properties":[{"name":"url","value":{"type":"string","value":"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="}}],"parentId":"18","childIds":[],"backendDOMNodeId":5},{"nodeId":"21","ignored":false,"role":{"type":"role","value":"heading"},"chromeRole":{"type":"internalRole","value":96},"name":{"type":"computedString","value":"Forms","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"},{"type":"contents","value":{"type":"computedString","value":"Forms"}},{"type":"attribute","attribute":"title","superseded":true}]},"properties":[{"name":"level","value":{"type":"integer","value":2}}],"parentId":"20","childIds":["42"],"backendDOMNodeId":21},{"nodeId":"22","ignored":false,"role":{"type":"role","value":"form"},"chromeRole":{"type":"internalRole","value":87},"name":{"type":"computedString","value":"Example checkout","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","value":{"type":"computedString","value":"Example checkout"},"attribute":"aria-label","attributeValue":{"type":"string","value":"Example checkout"}},{"type":"attribute","attribute":"title","superseded":true}]},"properties":[],"parentId":"20","childIds":["23","27","33"],"backendDOMNodeId":22},{"nodeId":"7","ignored":false,"role":{"type":"role","value":"heading"},"chromeRole":{"type":"internalRole","value":96},"name":{"type":"computedString","value":"Landmarks","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"},{"type":"contents","value":{"type":"computedString","value":"Landmarks"}},{"type":"attribute","attribute":"title","superseded":true}]},"properties":[{"name":"level","value":{"type":"integer","value":2}}],"parentId":"34","childIds":["45"],"backendDOMNodeId":7},{"nodeId":"35","ignored":false,"role":{"type":"role","value":"navigation"},"chromeRole":{"type":"internalRole","value":130},"name":{"type":"computedString","value":"Primary","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","value":{"type":"computedString","value":"Primary"},"attribute":"aria-label","attributeValue":{"type":"string","value":"Primary"}},{"type":"attribute","attribute":"title","superseded":true}]},"properties":[],"parentId":"34","childIds":["36","37"],"backendDOMNodeId":35},{"nodeId":"-1000000002","ignored":false,"role":{"type":"internalRole","value":"InlineTextBox"},"chromeRole":{"type":"internalRole","value":101},"name":{"type":"computedString","value":"Accessibility Playground"},"properties":[],"parentId":"39","childIds":[]},{"nodeId":"40","ignored":false,"role":{"type":"internalRole","value":"StaticText"},"chromeRole":{"type":"internalRole","value":158},"name":{"type":"computedString","value":"Buttons","sources":[{"type":"contents","value":{"type":"computedString","value":"Buttons"}}]},"properties":[],"parentId":"15","childIds":["-1000000003"],"backendDOMNodeId":40},{"nodeId":"41","ignored":false,"role":{"type":"internalRole","value":"StaticText"},"chromeRole":{"type":"internalRole","value":158},"name":{"type":"computedString","value":"Images","sources":[{"type":"contents","value":{"type":"computedString","value":"Images"}}]},"properties":[],"parentId":"19","childIds":["-1000000004"],"backendDOMNodeId":41},{"nodeId":"42","ignored":false,"role":{"type":"internalRole","value":"StaticText"},"chromeRole":{"type":"internalRole","value":158},"name":{"type":"computedString","value":"Forms","sources":[{"type":"contents","value":{"type":"computedString","value":"Forms"}}]},"properties":[],"parentId":"21","childIds":["-1000000005"],"backendDOMNodeId":42},{"nodeId":"23","ignored":false,"role":{"type":"internalRole","value":"LabelText"},"chromeRole":{"type":"internalRole","value":104},"name":{"type":"computedString","value":"","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"},{"type":"attribute","attribute":"title"}]},"properties":[],"parentId":"22","childIds":["43","24"],"backendDOMNodeId":23},{"nodeId":"27","ignored":false,"role":{"type":"role","value":"searchbox"},"chromeRole":{"type":"internalRole","value":153},"name":{"type":"computedString","value":"Search catalog","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"},{"type":"relatedElement","nativeSource":"label"},{"type":"attribute","attribute":"title"},{"type":"placeholder","value":{"type":"computedString","value":"Search catalog"},"attribute":"placeholder","attributeValue":{"type":"string","value":"Search catalog"}},{"type":"placeholder","attribute":"aria-placeholder","superseded":true},{"type":"attribute","attribute":"title","superseded":true}]},"properties":[{"name":"invalid","value":{"type":"token","value":"false"}},{"name":"focusable","value":{"type":"booleanOrUndefined","value":true}},{"name":"editable","value":{"type":"token","value":"plaintext"}},{"name":"settable","value":{"type":"booleanOrUndefined","value":true}}],"parentId":"22","childIds":["28","29"],"backendDOMNodeId":27},{"nodeId":"33","ignored":false,"role":{"type":"role","value":"button"},"chromeRole":{"type":"internalRole","value":9},"name":{"type":"computedString","value":"Inspect Example","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"},{"type":"relatedElement","nativeSource":"label"},{"type":"contents","value":{"type":"computedString","value":"Inspect Example"}},{"type":"attribute","attribute":"title","superseded":true}]},"properties":[{"name":"invalid","value":{"type":"token","value":"false"}},{"name":"focusable","value":{"type":"booleanOrUndefined","value":true}}],"parentId":"22","childIds":["44"],"backendDOMNodeId":33},{"nodeId":"45","ignored":false,"role":{"type":"internalRole","value":"StaticText"},"chromeRole":{"type":"internalRole","value":158},"name":{"type":"computedString","value":"Landmarks","sources":[{"type":"contents","value":{"type":"computedString","value":"Landmarks"}}]},"properties":[],"parentId":"7","childIds":["-1000000008"],"backendDOMNodeId":45},{"nodeId":"36","ignored":false,"role":{"type":"role","value":"link"},"chromeRole":{"type":"internalRole","value":110},"name":{"type":"computedString","value":"Buttons","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"},{"type":"contents","value":{"type":"computedString","value":"Buttons"}},{"type":"attribute","attribute":"title","superseded":true}]},"properties":[{"name":"focusable","value":{"type":"booleanOrUndefined","value":true}},{"name":"url","value":{"type":"string","value":"http://localhost:5173/#buttons-heading"}}],"parentId":"35","childIds":["46"],"backendDOMNodeId":36},{"nodeId":"37","ignored":false,"role":{"type":"role","value":"link"},"chromeRole":{"type":"internalRole","value":110},"name":{"type":"computedString","value":"Forms","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"},{"type":"contents","value":{"type":"computedString","value":"Forms"}},{"type":"attribute","attribute":"title","superseded":true}]},"properties":[{"name":"focusable","value":{"type":"booleanOrUndefined","value":true}},{"name":"url","value":{"type":"string","value":"http://localhost:5173/#forms-heading"}}],"parentId":"35","childIds":["47"],"backendDOMNodeId":37},{"nodeId":"-1000000003","ignored":false,"role":{"type":"internalRole","value":"InlineTextBox"},"chromeRole":{"type":"internalRole","value":101},"name":{"type":"computedString","value":"Buttons"},"properties":[],"parentId":"40","childIds":[]},{"nodeId":"-1000000004","ignored":false,"role":{"type":"internalRole","value":"InlineTextBox"},"chromeRole":{"type":"internalRole","value":101},"name":{"type":"computedString","value":"Images"},"properties":[],"parentId":"41","childIds":[]},{"nodeId":"-1000000005","ignored":false,"role":{"type":"internalRole","value":"InlineTextBox"},"chromeRole":{"type":"internalRole","value":101},"name":{"type":"computedString","value":"Forms"},"properties":[],"parentId":"42","childIds":[]},{"nodeId":"43","ignored":false,"role":{"type":"internalRole","value":"StaticText"},"chromeRole":{"type":"internalRole","value":158},"name":{"type":"computedString","value":"Email","sources":[{"type":"contents","value":{"type":"computedString","value":"Email"}}]},"properties":[],"parentId":"23","childIds":["-1000000006"],"backendDOMNodeId":43},{"nodeId":"24","ignored":false,"role":{"type":"role","value":"textbox"},"chromeRole":{"type":"internalRole","value":170},"name":{"type":"computedString","value":"Email","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"},{"type":"relatedElement","value":{"type":"computedString","value":"Email"},"nativeSource":"labelwrapped","nativeSourceValue":{"type":"nodeList","relatedNodes":[{"backendDOMNodeId":23,"text":"Email"}]}},{"type":"attribute","attribute":"title","superseded":true},{"type":"placeholder","value":{"type":"computedString","value":"developer@example.com"},"attribute":"placeholder","attributeValue":{"type":"string","value":"developer@example.com"},"superseded":true},{"type":"placeholder","attribute":"aria-placeholder","superseded":true},{"type":"attribute","attribute":"title","superseded":true}]},"properties":[{"name":"invalid","value":{"type":"token","value":"false"}},{"name":"focusable","value":{"type":"booleanOrUndefined","value":true}},{"name":"editable","value":{"type":"token","value":"plaintext"}},{"name":"settable","value":{"type":"booleanOrUndefined","value":true}},{"name":"multiline","value":{"type":"boolean","value":false}},{"name":"readonly","value":{"type":"boolean","value":false}},{"name":"required","value":{"type":"boolean","value":false}},{"name":"labelledby","value":{"type":"nodeList","relatedNodes":[{"backendDOMNodeId":23,"text":"Email"}]}}],"parentId":"23","childIds":["25","26"],"backendDOMNodeId":24},{"nodeId":"28","ignored":true,"ignoredReasons":[],"role":{"type":"role","value":"none"},"chromeRole":{"type":"internalRole","value":0},"parentId":"27","childIds":[],"backendDOMNodeId":28},{"nodeId":"29","ignored":true,"ignoredReasons":[],"role":{"type":"role","value":"none"},"chromeRole":{"type":"internalRole","value":0},"parentId":"27","childIds":["31"],"backendDOMNodeId":29},{"nodeId":"31","ignored":false,"role":{"type":"role","value":"generic"},"chromeRole":{"type":"internalRole","value":88},"name":{"type":"computedString","value":"","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"}]},"properties":[{"name":"editable","value":{"type":"token","value":"plaintext"}}],"parentId":"29","childIds":[],"backendDOMNodeId":31},{"nodeId":"44","ignored":false,"role":{"type":"internalRole","value":"StaticText"},"chromeRole":{"type":"internalRole","value":158},"name":{"type":"computedString","value":"Inspect Example","sources":[{"type":"contents","value":{"type":"computedString","value":"Inspect Example"}}]},"properties":[],"parentId":"33","childIds":["-1000000007"],"backendDOMNodeId":44},{"nodeId":"-1000000008","ignored":false,"role":{"type":"internalRole","value":"InlineTextBox"},"chromeRole":{"type":"internalRole","value":101},"name":{"type":"computedString","value":"Landmarks"},"properties":[],"parentId":"45","childIds":[]},{"nodeId":"46","ignored":false,"role":{"type":"internalRole","value":"StaticText"},"chromeRole":{"type":"internalRole","value":158},"name":{"type":"computedString","value":"Buttons","sources":[{"type":"contents","value":{"type":"computedString","value":"Buttons"}}]},"properties":[],"parentId":"36","childIds":["-1000000009"],"backendDOMNodeId":46},{"nodeId":"47","ignored":false,"role":{"type":"internalRole","value":"StaticText"},"chromeRole":{"type":"internalRole","value":158},"name":{"type":"computedString","value":"Forms","sources":[{"type":"contents","value":{"type":"computedString","value":"Forms"}}]},"properties":[],"parentId":"37","childIds":["-1000000010"],"backendDOMNodeId":47},{"nodeId":"-1000000006","ignored":false,"role":{"type":"internalRole","value":"InlineTextBox"},"chromeRole":{"type":"internalRole","value":101},"name":{"type":"computedString","value":"Email"},"properties":[],"parentId":"43","childIds":[]},{"nodeId":"25","ignored":true,"ignoredReasons":[],"role":{"type":"role","value":"none"},"chromeRole":{"type":"internalRole","value":0},"parentId":"24","childIds":[],"backendDOMNodeId":25},{"nodeId":"26","ignored":false,"role":{"type":"role","value":"generic"},"chromeRole":{"type":"internalRole","value":88},"name":{"type":"computedString","value":"","sources":[{"type":"relatedElement","attribute":"aria-labelledby"},{"type":"attribute","attribute":"aria-label"}]},"properties":[{"name":"editable","value":{"type":"token","value":"plaintext"}}],"parentId":"24","childIds":[],"backendDOMNodeId":26},{"nodeId":"-1000000007","ignored":false,"role":{"type":"internalRole","value":"InlineTextBox"},"chromeRole":{"type":"internalRole","value":101},"name":{"type":"computedString","value":"Inspect Example"},"properties":[],"parentId":"44","childIds":[]},{"nodeId":"-1000000009","ignored":false,"role":{"type":"internalRole","value":"InlineTextBox"},"chromeRole":{"type":"internalRole","value":101},"name":{"type":"computedString","value":"Buttons"},"properties":[],"parentId":"46","childIds":[]},{"nodeId":"-1000000010","ignored":false,"role":{"type":"internalRole","value":"InlineTextBox"},"chromeRole":{"type":"internalRole","value":101},"name":{"type":"computedString","value":"Forms"},"properties":[],"parentId":"47","childIds":[]}],"dom":[{"selector":"#root","tagName":"div","outerHtml":"\u003cdiv id=\"root\">\u003cmain>\u003ch1>Accessibility Playground\u003c/h1>\u003csection aria-labelledby=\"buttons-heading\">\u003ch2 id=\"buttons-heading\">Buttons\u003c/h2>\u003cbutton id=\"named-button\" type=\"button\" aria-label=\"Save changes\">\u003c/button>\u003cbutton id=\"empty-button\" class=\"problem-button\" type=\"button\" data-open-accessibility-source=\"apps/playground/src/main.tsx:12:9\" data-open-accessibility-component=\"PlaygroundApp\" data-open-accessibility-framework=\"react\">\u003c/button>\u003c/section>\u003csection aria-labelledby=\"images-heading\">\u003ch2 id=\"","attributes":{"id":"root"},"id":"root","text":"Accessibility Playground\nButtons\nImages\nForms\nEmail\nInspect Example\nLandmarks\nButtons\nForms","accessibleNameHint":"Accessibility Playground\nButtons\nImages\nForms\nEmail\nInspect Example\nLandmarks\nButtons\nForms"},{"selector":"html > body > div > main","tagName":"main","outerHtml":"\u003cmain>\u003ch1>Accessibility Playground\u003c/h1>\u003csection aria-labelledby=\"buttons-heading\">\u003ch2 id=\"buttons-heading\">Buttons\u003c/h2>\u003cbutton id=\"named-button\" type=\"button\" aria-label=\"Save changes\">\u003c/button>\u003cbutton id=\"empty-button\" class=\"problem-button\" type=\"button\" data-open-accessibility-source=\"apps/playground/src/main.tsx:12:9\" data-open-accessibility-component=\"PlaygroundApp\" data-open-accessibility-framework=\"react\">\u003c/button>\u003c/section>\u003csection aria-labelledby=\"images-heading\">\u003ch2 id=\"images-heading\"","attributes":{},"text":"Accessibility Playground\nButtons\nImages\nForms\nEmail\nInspect Example\nLandmarks\nButtons\nForms","accessibleNameHint":"Accessibility Playground\nButtons\nImages\nForms\nEmail\nInspect Example\nLandmarks\nButtons\nForms"},{"selector":"body > div > main > h1","tagName":"h1","outerHtml":"\u003ch1>Accessibility Playground\u003c/h1>","attributes":{},"text":"Accessibility Playground","accessibleNameHint":"Accessibility Playground"},{"selector":"body > div > main > section:nth-of-type(1)","tagName":"section","outerHtml":"\u003csection aria-labelledby=\"buttons-heading\">\u003ch2 id=\"buttons-heading\">Buttons\u003c/h2>\u003cbutton id=\"named-button\" type=\"button\" aria-label=\"Save changes\">\u003c/button>\u003cbutton id=\"empty-button\" class=\"problem-button\" type=\"button\" data-open-accessibility-source=\"apps/playground/src/main.tsx:12:9\" data-open-accessibility-component=\"PlaygroundApp\" data-open-accessibility-framework=\"react\">\u003c/button>\u003c/section>","attributes":{"aria-labelledby":"buttons-heading"},"ariaLabelledBy":"buttons-heading","text":"Buttons","accessibleNameHint":"Buttons"},{"selector":"#buttons-heading","tagName":"h2","outerHtml":"\u003ch2 id=\"buttons-heading\">Buttons\u003c/h2>","attributes":{"id":"buttons-heading"},"id":"buttons-heading","text":"Buttons","accessibleNameHint":"Buttons"},{"selector":"#named-button","tagName":"button","outerHtml":"\u003cbutton id=\"named-button\" type=\"button\" aria-label=\"Save changes\">\u003c/button>","attributes":{"id":"named-button","type":"button","aria-label":"Save changes"},"id":"named-button","ariaLabel":"Save changes","accessibleNameHint":"Save changes"},{"selector":"#empty-button","tagName":"button","outerHtml":"\u003cbutton id=\"empty-button\" class=\"problem-button\" type=\"button\" data-open-accessibility-source=\"apps/playground/src/main.tsx:12:9\" data-open-accessibility-component=\"PlaygroundApp\" data-open-accessibility-framework=\"react\">\u003c/button>","attributes":{"id":"empty-button","class":"problem-button","type":"button","data-open-accessibility-source":"apps/playground/src/main.tsx:12:9","data-open-accessibility-component":"PlaygroundApp","data-open-accessibility-framework":"react"},"id":"empty-button"},{"selector":"body > div > main > section:nth-of-type(2)","tagName":"section","outerHtml":"\u003csection aria-labelledby=\"images-heading\">\u003ch2 id=\"images-heading\">Images\u003c/h2>\u003cimg id=\"decorative-image\" alt=\"\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==\">\u003cimg id=\"missing-alt-image\" data-open-accessibility-source=\"apps/playground/src/main.tsx:29:9\" data-open-accessibility-component=\"PlaygroundApp\" data-open-accessibility-framework=\"react\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==\">\u003c/section>","attributes":{"aria-labelledby":"images-heading"},"ariaLabelledBy":"images-heading","text":"Images","accessibleNameHint":"Images"},{"selector":"#images-heading","tagName":"h2","outerHtml":"\u003ch2 id=\"images-heading\">Images\u003c/h2>","attributes":{"id":"images-heading"},"id":"images-heading","text":"Images","accessibleNameHint":"Images"},{"selector":"#decorative-image","tagName":"img","outerHtml":"\u003cimg id=\"decorative-image\" alt=\"\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==\">","attributes":{"id":"decorative-image","alt":"","src":"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="},"id":"decorative-image"},{"selector":"#missing-alt-image","tagName":"img","outerHtml":"\u003cimg id=\"missing-alt-image\" data-open-accessibility-source=\"apps/playground/src/main.tsx:29:9\" data-open-accessibility-component=\"PlaygroundApp\" data-open-accessibility-framework=\"react\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==\">","attributes":{"id":"missing-alt-image","data-open-accessibility-source":"apps/playground/src/main.tsx:29:9","data-open-accessibility-component":"PlaygroundApp","data-open-accessibility-framework":"react","src":"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="},"id":"missing-alt-image"},{"selector":"body > div > main > section:nth-of-type(3)","tagName":"section","outerHtml":"\u003csection aria-labelledby=\"forms-heading\">\u003ch2 id=\"forms-heading\">Forms\u003c/h2>\u003cform aria-label=\"Example checkout\">\u003clabel>Email\u003cinput id=\"email\" placeholder=\"developer@example.com\" type=\"email\">\u003c/label>\u003cinput id=\"unlabelled-search\" placeholder=\"Search catalog\" data-open-accessibility-source=\"apps/playground/src/main.tsx:42:11\" data-open-accessibility-component=\"PlaygroundApp\" data-open-accessibility-framework=\"react\" type=\"search\">\u003cbutton type=\"submit\">Inspect Example\u003c/button>\u003c/form>\u003c/section>","attributes":{"aria-labelledby":"forms-heading"},"ariaLabelledBy":"forms-heading","text":"Forms\nEmail\nInspect Example","accessibleNameHint":"Forms"},{"selector":"#forms-heading","tagName":"h2","outerHtml":"\u003ch2 id=\"forms-heading\">Forms\u003c/h2>","attributes":{"id":"forms-heading"},"id":"forms-heading","text":"Forms","accessibleNameHint":"Forms"},{"selector":"div > main > section:nth-of-type(3) > form","tagName":"form","outerHtml":"\u003cform aria-label=\"Example checkout\">\u003clabel>Email\u003cinput id=\"email\" placeholder=\"developer@example.com\" type=\"email\">\u003c/label>\u003cinput id=\"unlabelled-search\" placeholder=\"Search catalog\" data-open-accessibility-source=\"apps/playground/src/main.tsx:42:11\" data-open-accessibility-component=\"PlaygroundApp\" data-open-accessibility-framework=\"react\" type=\"search\">\u003cbutton type=\"submit\">Inspect Example\u003c/button>\u003c/form>","attributes":{"aria-label":"Example checkout"},"ariaLabel":"Example checkout","text":"Email\nInspect Example","accessibleNameHint":"Example checkout"},{"selector":"main > section:nth-of-type(3) > form > label","tagName":"label","outerHtml":"\u003clabel>Email\u003cinput id=\"email\" placeholder=\"developer@example.com\" type=\"email\">\u003c/label>","attributes":{},"text":"Email","accessibleNameHint":"Email"},{"selector":"#email","tagName":"input","outerHtml":"\u003cinput id=\"email\" placeholder=\"developer@example.com\" type=\"email\">","attributes":{"id":"email","placeholder":"developer@example.com","type":"email"},"id":"email"},{"selector":"#unlabelled-search","tagName":"input","outerHtml":"\u003cinput id=\"unlabelled-search\" placeholder=\"Search catalog\" data-open-accessibility-source=\"apps/playground/src/main.tsx:42:11\" data-open-accessibility-component=\"PlaygroundApp\" data-open-accessibility-framework=\"react\" type=\"search\">","attributes":{"id":"unlabelled-search","placeholder":"Search catalog","data-open-accessibility-source":"apps/playground/src/main.tsx:42:11","data-open-accessibility-component":"PlaygroundApp","data-open-accessibility-framework":"react","type":"search"},"id":"unlabelled-search"},{"selector":"main > section:nth-of-type(3) > form > button","tagName":"button","outerHtml":"\u003cbutton type=\"submit\">Inspect Example\u003c/button>","attributes":{"type":"submit"},"text":"Inspect Example","accessibleNameHint":"Inspect Example"},{"selector":"body > div > main > section:nth-of-type(4)","tagName":"section","outerHtml":"\u003csection aria-labelledby=\"landmarks-heading\">\u003ch2 id=\"landmarks-heading\">Landmarks\u003c/h2>\u003cnav aria-label=\"Primary\">\u003ca href=\"#buttons-heading\">Buttons\u003c/a>\u003ca href=\"#forms-heading\">Forms\u003c/a>\u003c/nav>\u003c/section>","attributes":{"aria-labelledby":"landmarks-heading"},"ariaLabelledBy":"landmarks-heading","text":"Landmarks\nButtons\nForms","accessibleNameHint":"Landmarks"},{"selector":"#landmarks-heading","tagName":"h2","outerHtml":"\u003ch2 id=\"landmarks-heading\">Landmarks\u003c/h2>","attributes":{"id":"landmarks-heading"},"id":"landmarks-heading","text":"Landmarks","accessibleNameHint":"Landmarks"},{"selector":"div > main > section:nth-of-type(4) > nav","tagName":"nav","outerHtml":"\u003cnav aria-label=\"Primary\">\u003ca href=\"#buttons-heading\">Buttons\u003c/a>\u003ca href=\"#forms-heading\">Forms\u003c/a>\u003c/nav>","attributes":{"aria-label":"Primary"},"ariaLabel":"Primary","text":"Buttons\nForms","accessibleNameHint":"Primary"},{"selector":"main > section:nth-of-type(4) > nav > a:nth-of-type(1)","tagName":"a","outerHtml":"\u003ca href=\"#buttons-heading\">Buttons\u003c/a>","attributes":{"href":"#buttons-heading"},"text":"Buttons","accessibleNameHint":"Buttons"},{"selector":"main > section:nth-of-type(4) > nav > a:nth-of-type(2)","tagName":"a","outerHtml":"\u003ca href=\"#forms-heading\">Forms\u003c/a>","attributes":{"href":"#forms-heading"},"text":"Forms","accessibleNameHint":"Forms"},{"selector":"html > body > script","tagName":"script","outerHtml":"\u003cscript type=\"module\" src=\"/src/main.tsx\">\u003c/script>","attributes":{"type":"module","src":"/src/main.tsx"}}]}}</script>
+  <script>
+    const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+    const panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
+    const search = document.querySelector('.search');
+
+    function activateTab(id) {
+      tabs.forEach((tab) => tab.setAttribute('aria-selected', String(tab.id === 'tab-' + id)));
+      panels.forEach((panel) => panel.classList.toggle('active', panel.id === 'panel-' + id));
+      filterActivePanel();
+    }
+
+    function filterActivePanel() {
+      const query = search.value.trim().toLowerCase();
+      const panel = document.querySelector('.panel.active [data-filter-scope]');
+      if (!panel) return;
+      Array.from(panel.querySelectorAll('.item')).forEach((item) => {
+        item.classList.toggle('hidden', query.length > 0 && !item.textContent.toLowerCase().includes(query));
+      });
+    }
+
+    tabs.forEach((tab) => tab.addEventListener('click', () => activateTab(tab.dataset.tab)));
+    search.addEventListener('input', filterActivePanel);
+  </script>
+</body>
+</html>
