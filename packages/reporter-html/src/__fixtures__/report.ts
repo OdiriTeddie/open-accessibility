@@ -48,7 +48,12 @@ export function createFixtureReport(): AnalysisReport {
     ],
     snapshot: {
       accessibilityTree: [
-        { nodeId: "1", role: { value: "RootWebArea" }, name: { value: "Accessibility Fixtures" } },
+        {
+          nodeId: "1",
+          role: { value: "RootWebArea" },
+          name: { value: "Accessibility Fixtures" },
+          childIds: ["2"],
+        },
         {
           nodeId: "2",
           backendDOMNodeId: 101,

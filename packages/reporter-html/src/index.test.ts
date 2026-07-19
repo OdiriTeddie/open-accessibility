@@ -13,6 +13,8 @@ describe("renderHtmlReport", () => {
     expect(html).toContain("Accessibility nodes");
     expect(html).toContain("Schema 0.1.0 / Tool 0.1.0");
     expect(html).toContain("Accessibility Tree");
+    expect(html).toContain('class="tree" data-filter-scope');
+    expect(html).toContain('class="tree__children"');
     expect(html).toContain("Filter current view");
     expect(html).toContain('aria-label="Filter by impact"');
     expect(html).toContain('<option value="critical">Critical</option>');
@@ -25,6 +27,7 @@ describe("renderHtmlReport", () => {
     expect(html).toContain('data-kind="source" data-impact="critical"');
     expect(html).toContain('id="dom-empty-button"');
     expect(html).toContain('id="ax-2"');
+    expect(html.indexOf('id="ax-1"')).toBeLessThan(html.indexOf('id="ax-2"'));
     expect(html).toContain('data-explorer-link href="#dom-empty-button"');
     expect(html).toContain('data-explorer-link href="#ax-2"');
     expect(html).toContain('data-explorer-link href="#issue-1"');

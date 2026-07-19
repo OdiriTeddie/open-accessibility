@@ -7,9 +7,7 @@ import type {
 export function renderHtmlReport(report: AnalysisReport): string {
   const links = createExplorerLinks(report);
   const issueRows = report.issues.map((issue, index) => renderIssue(issue, index, links)).join("\n");
-  const axRows = report.snapshot.accessibilityTree
-    .map((node) => renderAccessibilityNode(node, links))
-    .join("\n");
+  const axRows = renderAccessibilityTree(report.snapshot.accessibilityTree, links);
   const domRows = report.snapshot.dom.map((element) => renderDomElement(element, links)).join("\n");
   const sourceRows = report.issues
     .map((issue, index) => (issue.location.source ? renderSourceRow(issue, index) : ""))
@@ -47,6 +45,9 @@ export function renderHtmlReport(report: AnalysisReport): string {
     .panel { display: none; }
     .panel.active { display: block; }
     .grid { display: grid; gap: 10px; }
+    .tree { display: grid; gap: 8px; }
+    .tree__children { display: grid; gap: 8px; margin-left: 18px; padding-left: 14px; border-left: 2px solid var(--border); }
+    .tree__children:empty { display: none; }
     .item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
     .item.hidden { display: none; }
     .item__top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
@@ -109,7 +110,7 @@ export function renderHtmlReport(report: AnalysisReport): string {
       <div class="grid" data-filter-scope>${issueRows || `<div class="empty">No axe-core violations found.</div>`}</div>
     </section>
     <section id="panel-accessibility-tree" class="panel" role="tabpanel" aria-labelledby="tab-accessibility-tree">
-      <div class="grid" data-filter-scope>${axRows || `<div class="empty">No accessibility nodes were returned.</div>`}</div>
+      <div class="tree" data-filter-scope>${axRows || `<div class="empty">No accessibility nodes were returned.</div>`}</div>
     </section>
     <section id="panel-dom" class="panel" role="tabpanel" aria-labelledby="tab-dom">
       <div class="grid" data-filter-scope>${domRows || `<div class="empty">No DOM elements were captured.</div>`}</div>
@@ -201,6 +202,34 @@ function renderIssue(
     </dl>
     <pre>${escapeHtml(issue.location.html)}</pre>
   </article>`;
+}
+
+function renderAccessibilityTree(nodes: AccessibilityTreeNode[], links: ExplorerLinks): string {
+  const { roots, nodesById } = buildAccessibilityTree(nodes);
+  const visited = new Set<string>();
+
+  return roots.map((node) => renderAccessibilityTreeNode(node, nodesById, links, visited)).join("\n");
+}
+
+function renderAccessibilityTreeNode(
+  node: AccessibilityTreeNode,
+  nodesById: Map<string, AccessibilityTreeNode>,
+  links: ExplorerLinks,
+  visited: Set<string>,
+): string {
+  if (visited.has(node.nodeId)) {
+    return "";
+  }
+  visited.add(node.nodeId);
+
+  const children = (node.childIds ?? [])
+    .map((childId) => nodesById.get(childId))
+    .filter((child): child is AccessibilityTreeNode => Boolean(child))
+    .map((child) => renderAccessibilityTreeNode(child, nodesById, links, visited))
+    .join("\n");
+
+  return `${renderAccessibilityNode(node, links)}
+    <div class="tree__children">${children}</div>`;
 }
 
 function renderAccessibilityNode(node: AccessibilityTreeNode, links: ExplorerLinks): string {
@@ -303,6 +332,27 @@ interface ExplorerLinks {
   accessibilityNodeIdByBackendNodeId: Map<number, string>;
   issueIdsBySelector: Map<string, string[]>;
   issueIdsByBackendNodeId: Map<number, string[]>;
+}
+
+interface AccessibilityTreeRenderModel {
+  roots: AccessibilityTreeNode[];
+  nodesById: Map<string, AccessibilityTreeNode>;
+}
+
+function buildAccessibilityTree(nodes: AccessibilityTreeNode[]): AccessibilityTreeRenderModel {
+  const nodesById = new Map(nodes.map((node) => [node.nodeId, node]));
+  const childNodeIds = new Set<string>();
+
+  nodes.forEach((node) => {
+    node.childIds?.forEach((childId) => childNodeIds.add(childId));
+  });
+
+  const roots = nodes.filter((node) => !childNodeIds.has(node.nodeId));
+
+  return {
+    roots: roots.length > 0 ? roots : nodes,
+    nodesById,
+  };
 }
 
 function createExplorerLinks(report: AnalysisReport): ExplorerLinks {
